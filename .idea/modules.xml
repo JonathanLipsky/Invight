@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Invight.iml" filepath="$PROJECT_DIR$/Invight.iml" />
       <module fileurl="file://$PROJECT_DIR$/ProjectFalcon.iml" filepath="$PROJECT_DIR$/ProjectFalcon.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
