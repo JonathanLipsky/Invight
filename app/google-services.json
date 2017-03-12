@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "412818914495",
+    "firebase_url": "https://projectfalcon-4c648.firebaseio.com",
+    "project_id": "projectfalcon-4c648",
+    "storage_bucket": "projectfalcon-4c648.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:412818914495:android:3fcbda272329a257",
+        "android_client_info": {
+          "package_name": "com.example.lokid.projectfalcon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "412818914495-endjsd18nlhnjedc8hf58alltlu6vj9j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChkfoGH8Z4NUsjzviFVZY8gLqlsZLsZ5w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
