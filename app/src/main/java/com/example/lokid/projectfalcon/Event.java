@@ -34,6 +34,7 @@ public class Event {
     public Event(String title, Calendar date,String eventDiscription, Calendar time){
         this(title,date,eventDiscription);
         this.eventTime = time;
+        int pasta;
     }
 
     public String getEventTitle() {
@@ -59,7 +60,7 @@ public class Event {
     public void setEventTime(Calendar eventTime) {
         this.eventTime = eventTime;
     }
-    
+
 
     public String getEventDiscription() {
         return eventDiscription;
