@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
 
-////        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+//        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(myToolbar);
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
