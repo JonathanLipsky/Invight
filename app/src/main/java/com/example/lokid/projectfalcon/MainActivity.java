@@ -7,18 +7,22 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -39,6 +43,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 
 import static com.example.lokid.projectfalcon.R.id.map;
+//import static com.example.lokid.projectfalcon.R.id.toolbar;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
         ConnectionCallbacks,
@@ -52,40 +57,46 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     LocationRequest mLocationRequest;
     Location mLastLocation;
     Marker mCurrLocationMarker;
-
+    SupportMapFragment mapFragment;
+    android.support.v4.app.FragmentManager sfm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_event_list);
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(map);
+        mapFragment = SupportMapFragment.newInstance();
+         //mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
         mapFragment.getMapAsync(this);
 
-//        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(myToolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-//
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//        drawer.setDrawerListener(toggle);
-//        toggle.syncState();
-//
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
+        sfm = getSupportFragmentManager();
+        sfm.beginTransaction().add(R.id.mapFrame, mapFragment).commit();
 
     }
 
@@ -261,9 +272,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         Fragment fragment = null;
+
         int id = item.getItemId();
 
-        if (id == R.id.nav_signin) {
+        sfm.beginTransaction().hide(mapFragment).commit();
+
+
+        if (id == R.id.nav_profile) {
 
             fragment = new RegistrationFragment();
             FragmentManager manager = getSupportFragmentManager();
@@ -271,15 +286,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
                     .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
 
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_settings) {
+
             fragment = new SettingsFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction()
                     .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
                     .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
 
-        } else if (id == R.id.nav_slideshow) {
-
+        } else if (id == R.id.nav_home) {
+            fragment = new BlankFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction()
+                    .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                    .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
+            sfm.beginTransaction().setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                    .show(mapFragment).commit();
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
