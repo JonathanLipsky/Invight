@@ -42,9 +42,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.google.maps.android.SphericalUtil;
 //import static com.example.lokid.projectfalcon.R.id.toolbar;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -62,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     Marker mCurrLocationMarker;
     SupportMapFragment mapFragment;
     android.support.v4.app.FragmentManager sfm;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,18 +142,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
-        mMap.setOnMarkerClickListener(this);
+        mMap.setOnMarkerClickListener(this);                            //TODO do an overirde to popup event page
 
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+
+
                                            @Override
                                            public void onMapLongClick(LatLng latLng) {
-                                               startPlacePickerActivity();
+                                               startPlacePickerActivity(latLng);
                                            }
                                        }
         );
     }
-
 
     View.OnClickListener viewClickListener
             = new View.OnClickListener() {
@@ -161,9 +166,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     };
 
-    private void startPlacePickerActivity() {
+    private void startPlacePickerActivity(LatLng tapSpot) {
         PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
 
+
+            intentBuilder.setLatLngBounds(toBounds(tapSpot,750.00));
         try {
             Intent intent = intentBuilder.build(this);
             startActivityForResult(intent, REQUEST_CODE_PLACEPICKER);
@@ -403,5 +410,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Double leftLong = southwest.longitude;
         Double rightLogn = northeast.longitude;
 
+    }
+
+    public LatLngBounds toBounds(LatLng center, double radius) {
+        LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
+        LatLng northeast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
+        return new LatLngBounds(southwest, northeast);
     }
 }
