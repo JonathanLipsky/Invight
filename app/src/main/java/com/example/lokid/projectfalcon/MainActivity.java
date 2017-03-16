@@ -1,6 +1,7 @@
 package com.example.lokid.projectfalcon;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -31,7 +32,9 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         NavigationView.OnNavigationItemSelectedListener,
         OnMarkerClickListener {
 
+    private final int REQUEST_CODE_PLACEPICKER = 1;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
@@ -68,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             checkLocationPermission();
         }
         mapFragment = SupportMapFragment.newInstance();
-         //mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
+        //mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
 
 
         mGoogleApiClient = new GoogleApiClient
@@ -80,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -136,6 +139,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.setMyLocationEnabled(true);
         }
         mMap.setOnMarkerClickListener(this);
+
+
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                                           @Override
+                                           public void onMapLongClick(LatLng latLng) {
+                                               startPlacePickerActivity();
+                                           }
+                                       }
+        );
     }
 
 
@@ -148,6 +160,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
     };
+
+    private void startPlacePickerActivity() {
+        PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
+
+        try {
+            Intent intent = intentBuilder.build(this);
+            startActivityForResult(intent, REQUEST_CODE_PLACEPICKER);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void displaySelectedPlaceFromPlacePicker(Intent data) {
+        Place placeSelected = PlacePicker.getPlace(data, this);
+
+        String name = placeSelected.getName().toString();
+        String address = placeSelected.getAddress().toString();
+
+        //TODO create location page from info pulled from selected lcoation here
+        //    TextView enterCurrentLocation = (TextView) findViewById(R.id.show_selected_location);    //this view will be the location page
+        //   enterCurrentLocation.setText(name + ", " + address);      //add other place information we would need
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_PLACEPICKER && resultCode == RESULT_OK) {
+            displaySelectedPlaceFromPlacePicker(data);
+        }
+    }
 
 
     @Override
