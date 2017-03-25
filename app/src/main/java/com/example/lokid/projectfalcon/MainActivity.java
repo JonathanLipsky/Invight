@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
 
 
-            intentBuilder.setLatLngBounds(toBounds(tapSpot,750.00));
+            intentBuilder.setLatLngBounds(toBounds(tapSpot,400.00));
         try {
             Intent intent = intentBuilder.build(this);
             startActivityForResult(intent, REQUEST_CODE_PLACEPICKER);
@@ -186,6 +186,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         String address = placeSelected.getAddress().toString();
 
         //TODO create location page from info pulled from selected lcoation here
+
+
         //    TextView enterCurrentLocation = (TextView) findViewById(R.id.show_selected_location);    //this view will be the location page
         //   enterCurrentLocation.setText(name + ", " + address);      //add other place information we would need
     }
@@ -390,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         markerOptions.position(latLng);
         markerOptions.title("Current Position");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-        mCurrLocationMarker = mMap.addMarker(markerOptions);
+        //mCurrLocationMarker = mMap.addMarker(markerOptions);
 
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
