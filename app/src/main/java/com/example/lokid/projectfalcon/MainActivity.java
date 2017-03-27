@@ -1,6 +1,7 @@
 package com.example.lokid.projectfalcon;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -20,9 +21,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -59,6 +67,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final int REQUEST_CODE_PLACEPICKER = 1;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
+    private Context mContext;
+    private RelativeLayout mRelativeLayout;
+
+    private PopupWindow mPopupWindow;
     LocationRequest mLocationRequest;
     Location mLastLocation;
     Marker mCurrLocationMarker;
@@ -66,11 +78,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     android.support.v4.app.FragmentManager sfm;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_list);
+
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
@@ -109,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         navigationView.setNavigationItemSelectedListener(this);
 
         mapFragment.getMapAsync(this);
+
+        mContext = getApplicationContext();
+        mRelativeLayout = (RelativeLayout) findViewById(R.id.map);
 
         sfm = getSupportFragmentManager();
         sfm.beginTransaction().add(R.id.mapFrame, mapFragment).commit();
@@ -170,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
 
 
-            intentBuilder.setLatLngBounds(toBounds(tapSpot,400.00));
+        intentBuilder.setLatLngBounds(toBounds(tapSpot, 400.00));
         try {
             Intent intent = intentBuilder.build(this);
             startActivityForResult(intent, REQUEST_CODE_PLACEPICKER);
@@ -179,23 +194,53 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void displaySelectedPlaceFromPlacePicker(Intent data) {
-        Place placeSelected = PlacePicker.getPlace(data, this);
+    private void displayPlace(Place place) {
+        if (place == null)
+            return;
 
-        String name = placeSelected.getName().toString();
-        String address = placeSelected.getAddress().toString();
+        String location_name = "";
+        String location_address = "";
+        String location_number = "";
 
-        //TODO create location page from info pulled from selected lcoation here
+        String content = "";
+        if (!TextUtils.isEmpty(place.getName())) {
+            location_name = place.getName() + "\n";
+        }
+        if (!TextUtils.isEmpty(place.getAddress())) {
+            location_address = place.getAddress() + "\n";
+        }
+        if (!TextUtils.isEmpty(place.getPhoneNumber())) {
+            location_number = (String) place.getPhoneNumber();
+        }
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.location, (ViewGroup) findViewById(R.id.popup_location), false);
+
+        final PopupWindow pwindo = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+        //setContentView(R.layout.location);
+
+        // mPopupWindow = new PopupWindow(viewPopUp, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+
+        TextView mTextView2 = (TextView) layout.findViewById(R.id.textView2);
+        mTextView2.setText(location_address);
+
+        TextView mTextView3 = (TextView) layout.findViewById(R.id.textView3);
+        mTextView3.setText(location_number);
+
+        TextView mTextView = (TextView) layout.findViewById(R.id.textView1);
+        mTextView.setText(location_name);
 
 
-        //    TextView enterCurrentLocation = (TextView) findViewById(R.id.show_selected_location);    //this view will be the location page
-        //   enterCurrentLocation.setText(name + ", " + address);      //add other place information we would need
+        pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
+        //mPopupWindow.showAtLocation(mRelativeLayout, Gravity.CENTER,0,0);
+
     }
 
-    @Override
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_PLACEPICKER && resultCode == RESULT_OK) {
-            displaySelectedPlaceFromPlacePicker(data);
+            displayPlace(PlacePicker.getPlace(data, this));
         }
     }
 
