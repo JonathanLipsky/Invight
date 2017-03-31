@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.concurrent.Executor;
 
@@ -128,6 +130,17 @@ public class RegistrationFragment extends Fragment {
                             Toast.makeText(getActivity(), "Registered Successfully", Toast.LENGTH_SHORT).show();
                             progressDialog.dismiss();
                         }
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                        user.sendEmailVerification()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d("RegistrationEmail", "Email sent.");
+                                        }
+                                    }
+                                });
                     }
                 });
 
