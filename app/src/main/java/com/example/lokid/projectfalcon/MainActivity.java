@@ -282,6 +282,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mImageView = (ImageView)findViewById(R.id.mImageView);
         final String placeId = place.getId(); // Australian Cruise Group
+        //
         Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeId)
                 .setResultCallback(new ResultCallback<PlacePhotoMetadataResult>() {
 
