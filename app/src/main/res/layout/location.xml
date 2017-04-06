@@ -1,62 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/popup_location"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_centerHorizontal="true"
-    android:background="#ffffff"
-    android:orientation="vertical"
-    android:padding="10sp"
-    android:weightSum="1">
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+
+    <ImageView
+        android:id="@+id/mImageView"
+        android:layout_width="400dp"
+        android:layout_height="200dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/willistower"
+         />
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/textLocationName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="84dp"
-        android:layout_weight="0.17"
-        android:text="TextView"
-        android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/textView3" />
+        android:layout_below="@+id/mImageView"
+        android:text="Location Name: "
+        android:layout_marginLeft="15dp"
+        android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textLocationNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0.17"
-        android:text="TextView"
-        android:layout_below="@+id/textView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="26dp" />
+        android:layout_below="@+id/textLocationName"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
+        android:text="Location Number: "
+        android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/textLocationAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0.17"
-        android:text="TextView"
-        android:layout_marginTop="26dp"
-        android:layout_below="@+id/textView2"
-        android:layout_alignStart="@+id/textView2" />
+        android:layout_below="@+id/textLocationNumber"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
+        android:text="Location Address: "
+        android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Current Events"
-        android:layout_marginTop="85dp"
-        android:layout_below="@+id/textView3"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="27dp" />
+        android:layout_below="@+id/textLocationAddress"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create Event"
-        android:layout_marginEnd="23dp"
-        android:layout_alignBaseline="@+id/button4"
-        android:layout_alignBottom="@+id/button4"
-        android:layout_toStartOf="@+id/button4" />
+        <Button
+            android:id="@+id/buttonEvents"
+            style="?android:borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Events"
+            android:textColor="@color/dialog_button_color" />
 
+        <Button
+            android:id="@+id/buttonCreateEvent"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Event"
+            android:textColor="@color/dialog_button_color" />
+    </LinearLayout>
 </RelativeLayout>

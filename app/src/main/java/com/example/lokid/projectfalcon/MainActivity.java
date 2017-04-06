@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,10 +39,15 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlacePhotoMetadata;
+import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
+import com.google.android.gms.location.places.PlacePhotoMetadataResult;
+import com.google.android.gms.location.places.PlacePhotoResult;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -67,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final int REQUEST_CODE_PLACEPICKER = 1;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClientPlaces;
     private Context mContext;
     private RelativeLayout mRelativeLayout;
 
@@ -95,8 +103,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .Builder(this)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
+                .addApi(LocationServices.API)
                 .enableAutoManage(this, this)
                 .build();
+
+        mGoogleApiClientPlaces = new GoogleApiClient
+                .Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        //mGoogleApiClientPlaces.connect();
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -213,6 +232,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             location_number = (String) place.getPhoneNumber();
         }
 
+
+
+
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.location, (ViewGroup) findViewById(R.id.popup_location), false);
 
@@ -221,20 +243,66 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //setContentView(R.layout.location);
 
         // mPopupWindow = new PopupWindow(viewPopUp, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
-
-        TextView mTextView2 = (TextView) layout.findViewById(R.id.textView2);
+        placePhotosAsync(place);
+        
+        TextView mTextView2 = (TextView) layout.findViewById(R.id.textLocationAddress);
         mTextView2.setText(location_address);
 
-        TextView mTextView3 = (TextView) layout.findViewById(R.id.textView3);
+        TextView mTextView3 = (TextView) layout.findViewById(R.id.textLocationNumber);
         mTextView3.setText(location_number);
 
-        TextView mTextView = (TextView) layout.findViewById(R.id.textView1);
+        TextView mTextView = (TextView) layout.findViewById(R.id.textLocationName);
         mTextView.setText(location_name);
 
 
         pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
         //mPopupWindow.showAtLocation(mRelativeLayout, Gravity.CENTER,0,0);
 
+    }
+
+    private ResultCallback<PlacePhotoResult> mDisplayPhotoResultCallback
+            = new ResultCallback<PlacePhotoResult>() {
+        @Override
+        public void onResult(PlacePhotoResult placePhotoResult) {
+            if (!placePhotoResult.getStatus().isSuccess()) {
+                return;
+            }
+            mImageView.setImageBitmap(placePhotoResult.getBitmap());
+        }
+    };
+
+    /**
+     * Load a bitmap from the photos API asynchronously
+     * by using buffers and result callbacks.
+     */
+
+  private ImageView mImageView;
+
+    private void placePhotosAsync(Place place) {
+
+        mImageView = (ImageView)findViewById(R.id.mImageView);
+        final String placeId = place.getId(); // Australian Cruise Group
+        Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeId)
+                .setResultCallback(new ResultCallback<PlacePhotoMetadataResult>() {
+
+
+                    @Override
+                    public void onResult(PlacePhotoMetadataResult photos) {
+                        if (!photos.getStatus().isSuccess()) {
+                            return;
+                        }
+
+                        PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
+                        if (photoMetadataBuffer.getCount() > 0) {
+                            // Display the first bitmap in an ImageView in the size of the view
+                            photoMetadataBuffer.get(0)
+                                    .getScaledPhoto(mGoogleApiClient, mImageView.getWidth(),
+                                            mImageView.getHeight())
+                                    .setResultCallback(mDisplayPhotoResultCallback);
+                        }
+                        photoMetadataBuffer.release();
+                    }
+                });
     }
 
 
