@@ -107,13 +107,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .enableAutoManage(this, this)
                 .build();
 
-        mGoogleApiClientPlaces = new GoogleApiClient
-                .Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
         //mGoogleApiClientPlaces.connect();
 
 
@@ -243,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //setContentView(R.layout.location);
 
         // mPopupWindow = new PopupWindow(viewPopUp, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
-        placePhotosAsync(place);
+        //placePhotosAsync(place);
         
         TextView mTextView2 = (TextView) layout.findViewById(R.id.textLocationAddress);
         mTextView2.setText(location_address);
@@ -474,7 +467,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
             sfm.beginTransaction().setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
                     .show(mapFragment).commit();
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_favorites) {
 
         } else if (id == R.id.nav_share) {
 
