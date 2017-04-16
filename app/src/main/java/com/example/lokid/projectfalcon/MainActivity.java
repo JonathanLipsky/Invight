@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -62,6 +64,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.maps.android.SphericalUtil;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 //import static com.example.lokid.projectfalcon.R.id.toolbar;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -69,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LocationListener,
         OnConnectionFailedListener,
         NavigationView.OnNavigationItemSelectedListener,
-        OnMarkerClickListener {
+        ClusterManager.OnClusterItemClickListener<Event> {
 
     private final int REQUEST_CODE_PLACEPICKER = 1;
     private GoogleMap mMap;
@@ -77,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleApiClient mGoogleApiClientPlaces;
     private Context mContext;
     private RelativeLayout mRelativeLayout;
+    private ClusterManager<Event> mClusterManager;
+
 
     private PopupWindow mPopupWindow;
     LocationRequest mLocationRequest;
@@ -169,8 +176,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
-        mMap.setOnMarkerClickListener(this);                            //TODO do an overirde to popup event page
+                                   //TODO do an overirde to popup event page
 
+        //sets up pins at startup
+        mClusterManager = new ClusterManager<>(mContext,mMap);
+        mClusterManager.setRenderer(new EventRenderer());
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+        mMap.setOnInfoWindowClickListener(mClusterManager);
+        mClusterManager.setOnClusterItemClickListener(this);
+        Event[] events = DatabaseHandler.retrieveEventsNoSpan(mMap.getProjection().fromScreenLocation(new Point(0,0)),mMap.getProjection().fromScreenLocation(new Point(0,0)));
+        for(Event e: events)
+        {
+            mClusterManager.addItem(e);
+        }
+        mClusterManager.cluster();
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
@@ -481,7 +501,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    public boolean onMarkerClick(Marker marker) {
+    public boolean onClusterItemClick(Event item) {
+        // Does nothing, but you could go into the user's profile page, for example.
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.event_page, (ViewGroup) findViewById(R.id.eventPageLayout), false);
+
+        final PopupWindow pwindo = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         return false;
     }
 
@@ -525,5 +550,44 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
         LatLng northeast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
         return new LatLngBounds(southwest, northeast);
+    }
+
+    public GoogleMap getMap()
+    {
+        return mMap;
+    }
+
+    private class EventRenderer extends DefaultClusterRenderer<Event> implements GoogleMap.OnCameraIdleListener{
+
+
+        public EventRenderer() {
+            super(getApplicationContext(), getMap(), mClusterManager);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(Event e, MarkerOptions markerOptions) {
+            // Draw a single person.
+            // Set the info window to show their name.
+            if(e.getEventType() != 0) {
+                Bitmap icon = BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                        e.getEventType());
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
+            }
+        }
+
+        @Override
+        protected boolean shouldRenderAsCluster(Cluster cluster) {
+            // Always render clusters.
+            return cluster.getSize() > 1;
+        }
+
+
+        @Override
+        public void onCameraIdle() {
+            //mClusterManager.clearItems();
+            //mClusterManager.addItem(new Event(37.429544,-122.0748307,1491369439, 1491279439,true,"Worked","just a test Event","Dillon",0,R.drawable.bar));
+            //mClusterManager.cluster();
+        }
+
     }
 }
