@@ -284,10 +284,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     };
 
-    /**
-     * Load a bitmap from the photos API asynchronously
-     * by using buffers and result callbacks.
-     */
 
   private ImageView mImageView;
 
