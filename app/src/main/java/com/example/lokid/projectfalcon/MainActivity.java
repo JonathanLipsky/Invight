@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -44,7 +44,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlacePhotoMetadata;
 import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadataResult;
 import com.google.android.gms.location.places.PlacePhotoResult;
@@ -209,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void displayPlace(Place place) {
         if (place == null)
             return;
-
+        Fragment fragment = null;
         String location_name = "";
         String location_address = "";
         String location_number = "";
@@ -247,6 +246,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         TextView mTextView = (TextView) layout.findViewById(R.id.textLocationName);
         mTextView.setText(location_name);
 
+        Button button = (Button) findViewById(R.id.buttonCreateEvent);
+        button.setOnClickListener(new View.OnClickListener() {
+                                      @Override
+                                      public void onClick(View v) {
+                                          // Perform action on click
+//                                          Fragment fragment = new CreateFragment();
+//                                          FragmentManager fragmentManager = getSupportFragmentManager();
+//                                          fragmentManager.beginTransaction()
+//                                                  .replace(R.id.content_event_list, fragment)
+//                                                  .commit();
+                                          Fragment fragment = new CreateFragment();
+                                          FragmentManager manager = getSupportFragmentManager();
+                                          manager.beginTransaction()
+                                                  .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                                                  .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
+
+
+
+
+                                      }
+                                  });
 
         pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
         //mPopupWindow.showAtLocation(mRelativeLayout, Gravity.CENTER,0,0);

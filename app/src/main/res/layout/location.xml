@@ -65,6 +65,7 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="true"
             android:text="Create Event"
             android:textColor="@color/dialog_button_color" />
     </LinearLayout>
