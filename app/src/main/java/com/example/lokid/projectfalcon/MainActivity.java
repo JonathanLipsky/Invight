@@ -192,6 +192,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         mClusterManager.cluster();
 
+        if(!DatabaseHandler.addEvent(new Event(37.418544,-122.0746307,1491369439, 1491279439,"TestEvent1","just a test Event","Dillon",0,R.drawable.bar)))
+            mClusterManager.clearItems();
+
+
+
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
 

@@ -28,8 +28,7 @@ public class DatabaseHandler {
     public static boolean addEvent(Event e)
     {
         //code to send event to db
-       // BigQuery bigquery = BigQueryOptions.defaultInstance().service();
-       /* BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
+      /* BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
         TableId tableId = TableId.of("Invight","Event");
         Map<String,Object> rowContent = new HashMap<>();
         rowContent.put("eventName",e.getTitle());
