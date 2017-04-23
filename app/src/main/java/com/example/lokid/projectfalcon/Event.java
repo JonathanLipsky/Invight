@@ -1,80 +1,83 @@
-package com.example.lokid.projectfalcon;
-
-/**
- * This class represents an event.
+/*
+ * Copyright 2013 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-public class Event {
+package com.example.lokid.projectfalcon;
 
-    private String eventTitle;
-    private double longitude;
-    private double latitude;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
+
+public class Event implements ClusterItem {
+    private final LatLng mPosition;
+    private String mTitle;
+    private String mSnippet;
     private long startTime;
     private long endTime;
-    private String eventDescription;
     private String photoReference;
     private String host;
     private int popularity;
-    private String eventType;
-    private boolean isPublicEvent;
+    private int eventType;
 
-    public Event() {}
-
-    public Event(double longitude, double latitude,long startTime,long endTime,boolean isPublicEvent){
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.isPublicEvent = isPublicEvent;
+    public Event(double lat, double lng) {
+        mPosition = new LatLng(lat, lng);
+        mTitle = null;
+        mSnippet = null;
     }
 
-    public Event( double longitude, double latitude, long startTime, long endTime, boolean isPublicEvent,String eventTitle, String eventDescription, String host, int popularity, String eventType) {
-        this.eventTitle = eventTitle;
-        this.longitude = longitude;
-        this.latitude = latitude;
+    public Event(double lat, double lng, String title, String snippet) {
+        mPosition = new LatLng(lat, lng);
+        mTitle = title;
+        mSnippet = snippet;
+    }
+
+    public Event( double longitude, double latitude, long startTime, long endTime,String eventTitle, String eventDescription, String host, int popularity, int eventType) {
+
+        this(longitude, latitude, eventTitle,eventDescription);
         this.startTime = startTime;
         this.endTime = endTime;
-        this.eventDescription = eventDescription;
         this.host = host;
         this.popularity = popularity;
         this.eventType = eventType;
-        this.isPublicEvent = isPublicEvent;
+        this.photoReference = "";
     }
 
-    public boolean isPublicEvent() {return isPublicEvent;}
-
-    public void setPublicEvent(boolean publicEvent) {this.isPublicEvent = publicEvent;}
-
-    public double getLongitude() {return longitude;}
-
-    public void setLongitude(double longitude) {this.longitude = longitude;}
-
-    public double getLatitude() {return latitude;}
-
-    public void setLatitude(double latitude) {this.latitude = latitude;}
-
-    public String getPhotoReference() {return photoReference;}
-
-    public void setPhotoReference(String photoReference) {this.photoReference = photoReference;}
-
-    public String getHost() {return host;}
-
-    public void setHost(String host) {this.host = host;}
-
-    public int getPopularity() {return popularity;}
-
-    public void setPopularity(int popularity) {this.popularity = popularity;}
-
-    public String getEventType() {return eventType;}
-
-    public void setEventType(String eventType) {this.eventType = eventType;}
-
-    public String getEventTitle() {
-        return eventTitle;
+    @Override
+    public LatLng getPosition() {
+        return mPosition;
     }
 
-    public void setEventTitle(String eventTitle) {
-        this.eventTitle = eventTitle;
+   // @Override
+    public String getTitle() { return mTitle; }
+
+   // @Override
+    public String getSnippet() { return mSnippet; }
+
+    /**
+     * Set the title of the marker
+     * @param title string to be set as title
+     */
+    public void setTitle(String title) {
+        mTitle = title;
+    }
+
+    /**
+     * Set the description of the marker
+     * @param snippet string to be set as snippet
+     */
+    public void setSnippet(String snippet) {
+        mSnippet = snippet;
     }
 
     public long getStartTime() {
@@ -93,9 +96,40 @@ public class Event {
         this.endTime = endTime;
     }
 
-    public String getEventDiscription() {
-        return eventDescription;
+    public String getPhotoReference() {
+        return photoReference;
     }
 
-    public void setEventDiscription(String eventDescription) {this.eventDescription = eventDescription;}
+    public void setPhotoReference(String photoReference) {
+        this.photoReference = photoReference;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(int popularity) {
+        this.popularity = popularity;
+    }
+
+    public int getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(int eventType) {
+        this.eventType = eventType;
+    }
+
+    public double getLong(){return mPosition.longitude;}
+
+    public double getLat(){return mPosition.latitude;}
+
 }
