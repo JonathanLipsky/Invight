@@ -25,6 +25,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,6 +39,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.lokid.projectfalcon.DatabaseHandler.RetrieveEventListener;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -69,6 +72,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import java.util.Calendar;
+import java.util.LinkedList;
 //import static com.example.lokid.projectfalcon.R.id.toolbar;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -76,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LocationListener,
         OnConnectionFailedListener,
         NavigationView.OnNavigationItemSelectedListener,
-        OnMarkerClickListener,ClusterManager.OnClusterItemClickListener<Event>{
+        OnMarkerClickListener,ClusterManager.OnClusterItemClickListener<Event>,RetrieveEventListener{
 
     private final int REQUEST_CODE_PLACEPICKER = 1;
     private GoogleMap mMap;
@@ -85,6 +89,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Context mContext;
     private RelativeLayout mRelativeLayout;
     private ClusterManager<Event> mClusterManager;
+    private DatabaseHandler database;
+    private LatLng mapCenter;
+    private LatLng mapCorner;
+    private Profile userProfile;
 
     private PopupWindow mPopupWindow;
     LocationRequest mLocationRequest;
@@ -179,23 +187,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         mMap.setOnMarkerClickListener(this);                            //TODO do an overirde to popup event page
 
+        //sets up the cluster manager
         mClusterManager = new ClusterManager<>(mContext,mMap);
         mClusterManager.setRenderer(new EventRenderer());
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnInfoWindowClickListener(mClusterManager);
         mClusterManager.setOnClusterItemClickListener(this);
-        Event[] events = DatabaseHandler.retrieveEventsNoSpan(mMap.getProjection().fromScreenLocation(new Point(0,0)),mMap.getProjection().fromScreenLocation(new Point(0,0)));
-        for(Event e: events)
-        {
-            mClusterManager.addItem(e);
-        }
-        mClusterManager.cluster();
-
-        if(!DatabaseHandler.addEvent(new Event(37.418544,-122.0746307,1491369439, 1491279439,"TestEvent1","just a test Event","Dillon",0,R.drawable.bar)))
-            mClusterManager.clearItems();
-
-
+        //sets up database
+        database = new DatabaseHandler();
+        database.addEventLister(this);
+        reDrawPins(false);
+        database.getUser("dillon","odonnell");
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
@@ -619,6 +622,44 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return mMap;
     }
 
+    @Override
+    public void getEvents(Event[] events) {
+        mClusterManager.clearItems();
+        for(Event e: events)
+        {
+            mClusterManager.addItem(e);
+        }
+        mClusterManager.cluster();
+    }
+
+    @Override
+    public void getProfile(Profile profile) {
+        if(profile != null)
+            userProfile = profile;
+        else{
+            //do something the user/password was entered incorrectly
+        }
+    }
+
+    public void reDrawPins(boolean checkMapChanged)
+    {
+        //redraws pins only if the map has changed
+        VisibleRegion vRegion = mMap.getProjection().getVisibleRegion();
+        LatLng cen = vRegion.latLngBounds.getCenter();
+        LatLng corn = vRegion.latLngBounds.northeast;
+        if(!checkMapChanged || corn.longitude != mapCorner.longitude || corn.latitude != mapCorner.latitude || cen.latitude != mapCenter.latitude || cen.longitude != mapCenter.longitude) {
+            Location center = new Location("");
+            Location corner = new Location("");
+            center.setLatitude(cen.latitude);
+            center.setLongitude(cen.longitude);
+            corner.setLatitude(corn.latitude);
+            corner.setLongitude(corn.longitude);
+            database.retrieveEvents(center, corner);
+            mapCenter = cen;
+            mapCorner = corn;
+        }
+    }
+
     private class EventRenderer extends DefaultClusterRenderer<Event> implements GoogleMap.OnCameraIdleListener{
 
 
@@ -646,9 +687,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         @Override
         public void onCameraIdle() {
-            //mClusterManager.clearItems();
-            //mClusterManager.addItem(new Event(37.429544,-122.0748307,1491369439, 1491279439,true,"Worked","just a test Event","Dillon",0,R.drawable.bar));
-            //mClusterManager.cluster();
+            reDrawPins(true);
         }
 
     }

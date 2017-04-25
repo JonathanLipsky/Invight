@@ -20,31 +20,37 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
 public class Event implements ClusterItem {
-    private final LatLng mPosition;
+    private LatLng mPosition;
     private String mTitle;
     private String mSnippet;
     private long startTime;
     private long endTime;
     private String photoReference;
     private String host;
+    private String key;
     private int popularity;
     private int eventType;
 
-    public Event(double lat, double lng) {
-        mPosition = new LatLng(lat, lng);
+    public Event()
+    {
+        //must have for DB.
+    }
+
+    public Event(LatLng pos) {
+        mPosition = pos;
         mTitle = null;
         mSnippet = null;
     }
 
-    public Event(double lat, double lng, String title, String snippet) {
-        mPosition = new LatLng(lat, lng);
+    public Event(LatLng pos, String title, String snippet) {
+        mPosition = pos;
         mTitle = title;
         mSnippet = snippet;
     }
 
-    public Event( double longitude, double latitude, long startTime, long endTime,String eventTitle, String eventDescription, String host, int popularity, int eventType) {
+    public Event( LatLng pos, long startTime, long endTime,String eventTitle, String eventDescription, String host, int popularity, int eventType) {
 
-        this(longitude, latitude, eventTitle,eventDescription);
+        this(pos, eventTitle,eventDescription);
         this.startTime = startTime;
         this.endTime = endTime;
         this.host = host;
@@ -132,4 +138,9 @@ public class Event implements ClusterItem {
 
     public double getLat(){return mPosition.latitude;}
 
+    public void setLatlng(LatLng pos){mPosition = pos;}
+
+    public String getKey() {return key;}
+
+    public void setKey(String key) {this.key = key;}
 }
