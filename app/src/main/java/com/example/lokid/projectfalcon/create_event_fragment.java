@@ -14,16 +14,27 @@ import android.view.ViewGroup;
 public class create_event_fragment extends Fragment {
 
 
+    DatabaseHandler database;
+
     public create_event_fragment() {
         // Required empty public constructor
     }
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+
+
+
+        database = new DatabaseHandler();
+
+        //database.addEvent();
+
+
         return inflater.inflate(R.layout.fragment_create_event_fragment, container, false);
+
+
     }
+
 
 }
