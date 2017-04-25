@@ -272,27 +272,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         TextView mTextView = (TextView) layout.findViewById(R.id.textLocationName);
         mTextView.setText(location_name);
 
-        Button button = (Button) findViewById(R.id.buttonCreateEvent);
+
+
+        Button button = (Button) layout.findViewById(R.id.buttonCreateEventPopUp);
         button.setOnClickListener(new View.OnClickListener() {
-                                      @Override
-                                      public void onClick(View v) {
-                                          // Perform action on click
-//                                          Fragment fragment = new CreateFragment();
-//                                          FragmentManager fragmentManager = getSupportFragmentManager();
-//                                          fragmentManager.beginTransaction()
-//                                                  .replace(R.id.content_event_list, fragment)
-//                                                  .commit();
-                                          Fragment fragment = new CreateFragment();
-                                          FragmentManager manager = getSupportFragmentManager();
-                                          manager.beginTransaction()
-                                                  .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-                                                  .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
+            @Override
+            public void onClick(View v) {
+                pwindo.dismiss();
+                sfm.beginTransaction().hide(mapFragment).commit();
+                Fragment fragment = new create_event_fragment();
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                        .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
+            }
+        });
 
-
-
-
-                                      }
-                                  });
 
         pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
         //mPopupWindow.showAtLocation(mRelativeLayout, Gravity.CENTER,0,0);
@@ -455,6 +450,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.event_list, menu);
+
         return true;
     }
 
@@ -466,7 +462,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.hour_24) {
+            return true;
+        }
+        if (id == R.id.days_7) {
+            return true;
+        }
+        if (id == R.id.all_time) {
             return true;
         }
 
@@ -526,6 +528,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onMarkerClick(Marker marker) {
         return false;
     }
+
+
 
     @Override
     public void onLocationChanged(Location location) {
