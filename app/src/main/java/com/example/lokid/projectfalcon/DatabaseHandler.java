@@ -45,13 +45,13 @@ public class DatabaseHandler {
         searchTime = 0;
     }
 
-    public void addEvent(Event event,GeoLocation Location) {
+    public void addEvent(Event event) {
         root = FirebaseDatabase.getInstance().getReference().child("Events");
         String id = root.push().getKey();
         root.child(id).setValue(event);
         //^sets up the itemStructure
         fire = new GeoFire(FirebaseDatabase.getInstance().getReference().child("Event_Locations"));
-        fire.setLocation(id,Location);
+        fire.setLocation(id,new GeoLocation(event.getLat(),event.getLong()));
         //sets up parallel geofire object that represents the location of other object
     }
 
