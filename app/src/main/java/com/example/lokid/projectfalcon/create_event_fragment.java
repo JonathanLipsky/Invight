@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 
@@ -27,12 +28,13 @@ public class create_event_fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 
 
+        final View view = inflater.inflate(R.layout.fragment_create_event_fragment, container, false);
 
         database = new DatabaseHandler();
 
 
 
-        Button button = (Button) container.findViewById(R.id.create_event);
+        Button button = (Button) view.findViewById(R.id.create_event);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,6 +44,10 @@ public class create_event_fragment extends Fragment {
                 new_event.setTitle(((TextView)v.findViewById(R.id.event_name)).getText().toString());
                 new_event.setSnippet(((TextView)v.findViewById(R.id.event_desc)).getText().toString());
                 new_event.setHost("Dillon");
+
+                Spinner spinner = (Spinner)v.findViewById(R.id.event_types);
+                String eventTpye = spinner.getSelectedItem().toString();
+                //new_event.setEventType(eventTpye);
 
 
 
@@ -58,7 +64,7 @@ public class create_event_fragment extends Fragment {
         //database.addEvent();
 
 
-        return inflater.inflate(R.layout.fragment_create_event_fragment, container, false);
+        return view;
 
 
     }
