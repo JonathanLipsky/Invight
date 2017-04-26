@@ -44,8 +44,11 @@ public class create_event_fragment extends Fragment {
                 new_event.setHost("Dillon");
 
 
-                //Date sTime =(((TextView)v.findViewById(R.id.event_start_time)).getText().toString());
-                //Date sDate = (((TextView)v.findViewById(R.id.event_start_date)).getText().toString());
+
+                String sTime =(((TextView)v.findViewById(R.id.event_start_time)).getText().toString());
+                String sDate = (((TextView)v.findViewById(R.id.event_start_date)).getText().toString());
+                String eTime =(((TextView)v.findViewById(R.id.event_end_time)).getText().toString());
+                String eDate = (((TextView)v.findViewById(R.id.event_end_date)).getText().toString());
 
 
             }
