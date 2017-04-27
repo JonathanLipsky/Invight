@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -78,6 +79,16 @@ public class create_event_fragment extends Fragment implements DatePickerDialog.
             public void onClick(View v) {
 
                 Event new_event = new Event();
+                EditText etTitle = (EditText)view.findViewById(R.id.editEventName);
+                String title = etTitle.getText().toString();
+                EditText etDescription = (EditText)view.findViewById(R.id.editEventDescription);
+                String description = etDescription.getText().toString();
+                Spinner sEventTypes = (Spinner)view.findViewById(R.id.event_types);
+                String eventType = sEventTypes.getSelectedItem().toString();
+
+                
+
+
 
             }
         });
@@ -93,15 +104,22 @@ public class create_event_fragment extends Fragment implements DatePickerDialog.
         TextView startDate = (TextView)view.findViewById(R.id.txtShowStartDate);
         startDate.setText(DateFormat.format("MM/dd/yyyy",selectedTime.getTimeInMillis()).toString());
     }
-
+    private int startHour;
+    private int endHour;
+    private int startMin;
+    private int endMin;
 
     @Override
     public void didFinishTimePickerDialog(int hour, int min) {
         TextView time = null;
         if(whichTime==1){
             time = (TextView)view.findViewById(R.id.txtShowStartTime);
+            startHour = hour;
+            startMin = min;
         }else if(whichTime==2){
             time = (TextView)view.findViewById(R.id.txtShowEndTime);
+            endHour = hour;
+            endMin = min;
         }
 
         String format = "";
