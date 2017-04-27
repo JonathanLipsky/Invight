@@ -86,7 +86,7 @@ public class create_event_fragment extends Fragment implements DatePickerDialog.
                 Spinner sEventTypes = (Spinner)view.findViewById(R.id.event_types);
                 String eventType = sEventTypes.getSelectedItem().toString();
 
-                
+
 
 
 
@@ -101,6 +101,7 @@ public class create_event_fragment extends Fragment implements DatePickerDialog.
     }
 
     public void didFinishDatePickerDialog(Calendar selectedTime) {
+        selectedDate = selectedTime;
         TextView startDate = (TextView)view.findViewById(R.id.txtShowStartDate);
         startDate.setText(DateFormat.format("MM/dd/yyyy",selectedTime.getTimeInMillis()).toString());
     }
@@ -108,7 +109,7 @@ public class create_event_fragment extends Fragment implements DatePickerDialog.
     private int endHour;
     private int startMin;
     private int endMin;
-
+    private Calendar selectedDate;
     @Override
     public void didFinishTimePickerDialog(int hour, int min) {
         TextView time = null;
