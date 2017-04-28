@@ -1,6 +1,7 @@
 package com.example.lokid.projectfalcon;
 
 import android.location.Location;
+import android.provider.Settings;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
@@ -8,9 +9,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.firebase.geofire.*;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -30,18 +34,20 @@ public class DatabaseHandler {
     private HashMap<String,GeoLocation> keys;
     private int numberOfKeys;
     private int keysAddedCurrently;
-    private LinkedList<LinkedList<Event>> events;
+    private ArrayList<Event> events;
     private DatabaseReference root;
     private DataListener lis = new DataListener();
     private GeoFire fire;
     private GeoListener listener;
     private RetrieveEventListener eventListener;
     private int searchTime;
+    private final long dayInMilli = 86400000;
+    private final long weekInMilli = 604800000;
 
     public DatabaseHandler()
     {
         keys = new HashMap<>();
-        events = new LinkedList<>();
+        events = new ArrayList<>();
         searchTime = 0;
     }
 
@@ -72,6 +78,26 @@ public class DatabaseHandler {
             searchTime = time;
     }
 
+    public Event[] getEvents(LatLng position)
+    {
+        ArrayList<Event> temp = new ArrayList<>();
+        for(int i = 0; i < events.size(); i++)
+        {
+            LatLng pos = events.get(i).getPosition();
+            if(pos.longitude == position.longitude && pos.latitude == position.latitude)
+            {
+                temp.add(temp.get(i));
+            }
+        }
+        return (Event[])temp.toArray();
+    }
+
+    public Event getSmartEvent()
+    {
+        int randomLoc = (int)(Math.random() *events.size());
+        return events.get(randomLoc);
+    }
+
     public void addUser(Profile profile)
     {
         root = FirebaseDatabase.getInstance().getReference().child("Profiles").child(profile.getUsername());
@@ -81,14 +107,13 @@ public class DatabaseHandler {
     public void getUser(String username, final String password)
     {
 
-        root = FirebaseDatabase.getInstance().getReference().child("Profiles");
-        root.child(username);
+        root = FirebaseDatabase.getInstance().getReference().child("Profiles").child(username);
         root.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue() != null ) {
                     Profile profile = dataSnapshot.getValue(Profile.class);
-                    if(profile.getPassword() == password)
+                    if(profile.getPassword().equals(password))
                         eventListener.getProfile(profile);
                     else
                         eventListener.getProfile(null);
@@ -117,24 +142,7 @@ public class DatabaseHandler {
     }
 
     private void addValue(Event e){
-        boolean added = false;
-        LatLng pos;
-        for(int i = 0; i < events.size(); i++)
-        {
-            pos = events.get(i).getFirst().getPosition();
-            if(pos.latitude == e.getLat() && pos.longitude == e.getLong())
-            {
-                events.get(i).add(e);
-                added = true;
-                break;
-            }
-        }
-        if(!added)
-        {
-            LinkedList<Event> list = new LinkedList<>();
-            list.add(e);
-            events.add(list);
-        }
+       events.add(e);
         keysAddedCurrently++;
         if(numberOfKeys == keysAddedCurrently)
            returnSortedEvents();
@@ -142,24 +150,58 @@ public class DatabaseHandler {
 
     private void returnSortedEvents()
     {
-        Event[] eventsSorted = new Event[events.size()];
-        LinkedList<Event> temp;
-        Event minValue;
+
+        Long time = (System.currentTimeMillis());
+        HashMap<String,Event> eventsSorted = new HashMap<>();
         for(int i = 0; i < events.size(); i++)
         {
-            temp =  events.get(i);
-            minValue = temp.get(0);
-            for(int j = 1; j < temp.size(); j++)
+            String temp = events.get(i).getPosition().toString();
+            if( false &&events.get(i).getEndTime() < time)
             {
-                if(temp.get(j).getPopularity() < minValue.getPopularity())
-                {
-                    minValue = temp.get(j);
-                }
+                removeEvent(events.get(i).getKey());
             }
-            eventsSorted[i] = minValue;
-
+            else if(searchTime == 0 && (!eventsSorted.containsKey(temp) || eventsSorted.get(temp).getPopularity() < events.get(i).getPopularity()))
+            {
+                eventsSorted.put(temp,events.get(i));
+            }
+            else if(searchTime == 1 && events.get(i).getStartTime() > (time - dayInMilli) &&(!eventsSorted.containsKey(temp) || eventsSorted.get(temp).getPopularity() < events.get(i).getPopularity()))
+            {
+                eventsSorted.put(temp,events.get(i));
+            }
+            else if(searchTime == 2 && events.get(i).getStartTime() > (time - weekInMilli) &&(!eventsSorted.containsKey(temp) || eventsSorted.get(temp).getPopularity() < events.get(i).getPopularity()))
+            {
+                eventsSorted.put(temp,events.get(i));
+            }
         }
-        eventListener.getEvents(eventsSorted);
+        eventListener.getEvents(eventsSorted.values().toArray(new Event[0]));
+    }
+
+    private void removeEvent(String key)
+    {
+        root = FirebaseDatabase.getInstance().getReference().child("Events").child(key);
+        root.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                dataSnapshot.getRef().removeValue();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        root = FirebaseDatabase.getInstance().getReference().child("Event_Locations").child(key);
+        root.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                dataSnapshot.getRef().removeValue();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private class GeoListener implements GeoQueryEventListener

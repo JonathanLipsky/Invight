@@ -72,6 +72,9 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 //import static com.example.lokid.projectfalcon.R.id.toolbar;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -150,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                onClusterItemClick(database.getSmartEvent());
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -215,6 +219,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         database.addEventLister(this);
         reDrawPins(false);
         database.getUser("dillon","odonnell");
+        database.addEvent(new Event(new LatLng(37.418544,-122.0746307),System.currentTimeMillis(),System.currentTimeMillis()+Integer.MAX_VALUE,"Mayor Speech","mayor talking about current plans and over things","mayor",
+                5,R.drawable.political));
+        //Map<String,Integer> events = new HashMap<>();
+        //events.put("default",0);
+        //Map<String,String> loc = new HashMap<>();
+        //loc.put("default","default");
+        //database.addUser(new Profile("dillon","odonnell",events,loc));
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
