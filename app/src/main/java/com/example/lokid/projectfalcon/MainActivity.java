@@ -72,9 +72,6 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.HashMap;
-import java.util.Map;
 //import static com.example.lokid.projectfalcon.R.id.toolbar;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -156,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 onClusterItemClick(database.getSmartEvent());
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
