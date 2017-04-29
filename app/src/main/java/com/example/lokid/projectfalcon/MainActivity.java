@@ -217,10 +217,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //sets up database
         database = new DatabaseHandler();
         database.addEventLister(this);
-        reDrawPins(false);
-        database.getUser("dillon","odonnell");
-        database.addEvent(new Event(new LatLng(37.418544,-122.0746307),System.currentTimeMillis(),System.currentTimeMillis()+Integer.MAX_VALUE,"Mayor Speech","mayor talking about current plans and over things","mayor",
-                5,R.drawable.political));
+        mapCenter = new LatLng(0,0);
+        mapCorner = new LatLng(0,0);
+        reDrawPins();
+       // database.getUser("dillon","odonnell");
         //Map<String,Integer> events = new HashMap<>();
         //events.put("default",0);
         //Map<String,String> loc = new HashMap<>();
@@ -264,7 +264,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void displayPlace(Place place) {
         if (place == null)
             return;
-        Fragment fragment = null;
         String location_name = "";
         String location_address = "";
         String location_number = "";
@@ -302,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         TextView mTextView = (TextView) layout.findViewById(R.id.textLocationName);
         mTextView.setText(location_name);
 
-
+        final LatLng position = place.getLatLng();
 
         Button button = (Button) layout.findViewById(R.id.buttonCreateEventPopUp);
         button.setOnClickListener(new View.OnClickListener() {
@@ -311,10 +310,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 pwindo.dismiss();
                 sfm.beginTransaction().hide(mapFragment).commit();
                 Fragment fragment = new create_event_fragment();
+                Bundle bundle = new Bundle();
+                bundle.putDouble("lat", position.latitude);
+                bundle.putDouble("lng", position.longitude);
+                fragment.setArguments(bundle);
                 FragmentManager manager = getSupportFragmentManager();
                 manager.beginTransaction()
                         .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
                         .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
+
             }
         });
 
@@ -668,13 +672,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void reDrawPins(boolean checkMapChanged)
+    public void reDrawPins()
     {
         //redraws pins only if the map has changed
         VisibleRegion vRegion = mMap.getProjection().getVisibleRegion();
         LatLng cen = vRegion.latLngBounds.getCenter();
         LatLng corn = vRegion.latLngBounds.northeast;
-        if(!checkMapChanged || corn.longitude != mapCorner.longitude || corn.latitude != mapCorner.latitude || cen.latitude != mapCenter.latitude || cen.longitude != mapCenter.longitude) {
+        if( corn.longitude != mapCorner.longitude || corn.latitude != mapCorner.latitude || cen.latitude != mapCenter.latitude || cen.longitude != mapCenter.longitude) {
             Location center = new Location("");
             Location corner = new Location("");
             center.setLatitude(cen.latitude);
@@ -714,7 +718,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         @Override
         public void onCameraIdle() {
-            reDrawPins(true);
+            reDrawPins();
         }
 
     }

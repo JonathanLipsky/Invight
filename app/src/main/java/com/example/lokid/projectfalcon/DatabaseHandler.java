@@ -51,12 +51,12 @@ public class DatabaseHandler {
         searchTime = 0;
     }
 
-    public void addEvent(Event event) {
-        root = FirebaseDatabase.getInstance().getReference().child("Events");
+    public static void addEvent(Event event) {
+        DatabaseReference root = FirebaseDatabase.getInstance().getReference().child("Events");
         String id = root.push().getKey();
         root.child(id).setValue(event);
         //^sets up the itemStructure
-        fire = new GeoFire(FirebaseDatabase.getInstance().getReference().child("Event_Locations"));
+        GeoFire fire = new GeoFire(FirebaseDatabase.getInstance().getReference().child("Event_Locations"));
         fire.setLocation(id,new GeoLocation(event.getLat(),event.getLong()));
         //sets up parallel geofire object that represents the location of other object
     }
@@ -156,7 +156,7 @@ public class DatabaseHandler {
         for(int i = 0; i < events.size(); i++)
         {
             String temp = events.get(i).getPosition().toString();
-            if( false &&events.get(i).getEndTime() < time)
+            if( events.get(i).getEndTime() < time)
             {
                 removeEvent(events.get(i).getKey());
             }
@@ -178,18 +178,6 @@ public class DatabaseHandler {
 
     private void removeEvent(String key)
     {
-        root = FirebaseDatabase.getInstance().getReference().child("Events").child(key);
-        root.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                dataSnapshot.getRef().removeValue();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
         root = FirebaseDatabase.getInstance().getReference().child("Event_Locations").child(key);
         root.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -202,6 +190,19 @@ public class DatabaseHandler {
 
             }
         });
+        root = FirebaseDatabase.getInstance().getReference().child("Events").child(key);
+        root.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                dataSnapshot.getRef().removeValue();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private class GeoListener implements GeoQueryEventListener
@@ -240,11 +241,13 @@ public class DatabaseHandler {
     private class DataListener implements ValueEventListener{
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            Event e = dataSnapshot.getValue(Event.class);
-            GeoLocation temp = keys.get(dataSnapshot.getKey());
-            e.setLatlng(new LatLng(temp.latitude,temp.longitude));
-            e.setKey(dataSnapshot.getKey());
-            addValue(e);
+            if(dataSnapshot.getValue() != null) {
+                Event e = dataSnapshot.getValue(Event.class);
+                GeoLocation temp = keys.get(dataSnapshot.getKey());
+                e.setLatlng(new LatLng(temp.latitude, temp.longitude));
+                e.setKey(dataSnapshot.getKey());
+                addValue(e);
+            }
         }
 
         @Override
