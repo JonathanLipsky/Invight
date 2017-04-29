@@ -135,8 +135,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
+
                 //Log.i(TAG, "Place: " + place.getName());
+
+                displayPlace(place);
             }
 
             @Override
