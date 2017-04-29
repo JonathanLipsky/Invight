@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -108,10 +109,14 @@ public class create_event_fragment extends Fragment implements DatePickerDialog.
                     new_event.setStartTime(format.parse(st).getTime());
                     new_event.setEndTime(format.parse(et).getTime());
                     DatabaseHandler.addEvent(new_event);
+                    Toast.makeText(getActivity(), "Event Created!", Toast.LENGTH_SHORT).show();
                 }catch(Exception e)
                 {
                     //if time wasnt properly created
                 }
+
+
+
             }
         });
 
