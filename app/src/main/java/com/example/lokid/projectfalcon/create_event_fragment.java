@@ -89,7 +89,7 @@ public class create_event_fragment extends Fragment implements DatePickerDialog.
                 new_event.setSnippet(description);
                 Spinner sEventTypes = (Spinner)view.findViewById(R.id.event_types);
                 String eventType = sEventTypes.getSelectedItem().toString();
-                new_event.setEventType(getEventType(eventType));
+                new_event.setEventType(eventType);
                 TextView sDate= (TextView)view.findViewById(R.id.txtShowStartDate);
                 String startDate = sDate.getText().toString();
                 TextView sTime= (TextView)view.findViewById(R.id.txtShowStartTime);
@@ -135,26 +135,6 @@ public class create_event_fragment extends Fragment implements DatePickerDialog.
         }
 
         return time;
-    }
-
-    private int getEventType(String event)
-    {
-        int eventName;
-        switch(event)
-        {
-            case "Bar": eventName = R.drawable.bar; break;
-            case "Community": eventName = R.drawable.community; break;
-            case "Concert": eventName = R.drawable.concert; break;
-            case "Education": eventName = R.drawable.education; break;
-            case "Fundraiser": eventName = R.drawable.fundraiser; break;
-            case "Get Together": eventName = R.drawable.get_together; break;
-            case "Kids": eventName = R.drawable.kids; break;
-            case "Party": eventName = R.drawable.party; break;
-            case "Political": eventName = R.drawable.political; break;
-            case "Sport": eventName = R.drawable.sport; break;
-            default: eventName = 0; break;
-        }
-        return eventName;
     }
 
     public void didFinishDatePickerDialog(Calendar selectedTime) {

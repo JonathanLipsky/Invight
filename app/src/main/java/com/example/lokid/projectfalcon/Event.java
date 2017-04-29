@@ -29,7 +29,7 @@ public class Event implements ClusterItem {
     private String host;
     private String key;
     private int popularity;
-    private int eventType;
+    private String eventType;
 
     public Event()
     {
@@ -48,7 +48,7 @@ public class Event implements ClusterItem {
         mSnippet = snippet;
     }
 
-    public Event( LatLng pos, long startTime, long endTime,String eventTitle, String eventDescription, String host, int popularity, int eventType) {
+    public Event( LatLng pos, long startTime, long endTime,String eventTitle, String eventDescription, String host, int popularity, String eventType) {
 
         this(pos, eventTitle,eventDescription);
         this.startTime = startTime;
@@ -126,11 +126,11 @@ public class Event implements ClusterItem {
         this.popularity = popularity;
     }
 
-    public int getEventType() {
+    public String getEventType() {
         return eventType;
     }
 
-    public void setEventType(int eventType) {
+    public void setEventType(String eventType) {
         this.eventType = eventType;
     }
 

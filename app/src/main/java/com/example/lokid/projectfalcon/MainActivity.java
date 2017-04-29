@@ -105,8 +105,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_list);
-
-
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -616,7 +614,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         ((TextView) layout.findViewById(R.id.title_box)).setText(item.getTitle());
         ((TextView) layout.findViewById(R.id.Description_Box)).setText(item.getSnippet());
-        ((TextView) layout.findViewById(R.id.event_type_box)).setText("Event Type:    " + getEventType(item.getEventType()));
+        ((TextView) layout.findViewById(R.id.event_type_box)).setText("Event Type:    " + item.getEventType());
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(item.getStartTime());
         ((TextView) layout.findViewById(R.id.start_time_box)).setText("Start Time :  " + cal.getTime());
@@ -627,22 +625,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return false;
     }
 
-    public String getEventType(int event)
+
+    private int getEventType(String event)
     {
-        String eventName;
+        int eventName;
         switch(event)
         {
-            case R.drawable.bar: eventName = "Bar"; break;
-            case R.drawable.community: eventName = "Community"; break;
-            case R.drawable.concert: eventName = "Concert"; break;
-            case R.drawable.education: eventName = "Education"; break;
-            case R.drawable.fundraiser: eventName = "Fundraiser"; break;
-            case R.drawable.get_together: eventName = "Get Together"; break;
-            case R.drawable.kids: eventName = "Kids"; break;
-            case R.drawable.party: eventName = "Party"; break;
-            case R.drawable.political: eventName = "Political"; break;
-            case R.drawable.sport: eventName = "Sport"; break;
-            default: eventName = "Other"; break;
+            case "Bar": eventName = R.drawable.bar; break;
+            case "Community": eventName = R.drawable.community; break;
+            case "Concert": eventName = R.drawable.concert; break;
+            case "Education": eventName = R.drawable.education; break;
+            case "Fund Raiser": eventName = R.drawable.fundraiser; break;
+            case "Get Together": eventName = R.drawable.get_together; break;
+            case "Kids": eventName = R.drawable.kids; break;
+            case "Party": eventName = R.drawable.party; break;
+            case "Political": eventName = R.drawable.political; break;
+            case "Sport": eventName = R.drawable.sport; break;
+            default: eventName = 0; break;
         }
         return eventName;
     }
@@ -701,11 +700,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         protected void onBeforeClusterItemRendered(Event e, MarkerOptions markerOptions) {
             // Draw a single person.
             // Set the info window to show their name.
-            if(e.getEventType() != 0) {
-                Bitmap icon = BitmapFactory.decodeResource(getApplicationContext().getResources(),
-                        e.getEventType());
-                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
+            int type = getEventType(e.getEventType());
+            if(type == 0) {
+                type = R.drawable.other;
             }
+                Bitmap icon = BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                        type);
+                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
         }
 
         @Override
