@@ -28,10 +28,8 @@ public class Profile {
         this.password = password;
     }
 
-    public Profile(String username,String password, Map<String,Integer> favEvents, Map<String,String> favLocations)
+    public Profile(String username,String password, HashMap<String,Integer> favEvents, HashMap<String,String> favLocations)
     {
-        favEvents = new HashMap<>();
-        favLocations = new HashMap<>();
         this.username = username;
         this.password = password;
         this.favEvents = favEvents;
