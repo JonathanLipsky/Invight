@@ -19,6 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/mImageView"
+        android:layout_centerHorizontal="true"
         android:text="Location Name: "
         android:layout_marginLeft="15dp"
         android:textAppearance="@android:style/TextAppearance.Material.Medium" />
@@ -27,6 +28,7 @@
         android:id="@+id/textLocationNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_below="@+id/textLocationName"
         android:layout_marginTop="15dp"
         android:layout_marginLeft="15dp"
@@ -37,6 +39,7 @@
         android:id="@+id/textLocationAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_below="@+id/textLocationNumber"
         android:layout_marginTop="15dp"
         android:layout_marginLeft="15dp"
