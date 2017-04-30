@@ -47,7 +47,7 @@ public class DatabaseHandler {
     public DatabaseHandler()
     {
         keys = new HashMap<>();
-        events = new ArrayList<>();
+        events = new ArrayList<>(50);
         searchTime = 0;
     }
 
@@ -65,6 +65,8 @@ public class DatabaseHandler {
     {
         numberOfKeys = 0;
         keysAddedCurrently = 0;
+        keys.clear();
+        events.clear();
         root = FirebaseDatabase.getInstance().getReference().child("Events");
         fire = new GeoFire(FirebaseDatabase.getInstance().getReference().child("Event_Locations"));
         GeoQuery query = fire.queryAtLocation(new GeoLocation(center.getLatitude(),center.getLongitude()),center.distanceTo(corner)/1000);
@@ -74,7 +76,7 @@ public class DatabaseHandler {
 
     public void setSearchTime(int time)
     {
-        if(time < 2 && time >= 0)
+        if(time < 3 && time >= 0)
             searchTime = time;
     }
 
@@ -164,11 +166,11 @@ public class DatabaseHandler {
             {
                 eventsSorted.put(temp,events.get(i));
             }
-            else if(searchTime == 1 && events.get(i).getStartTime() > (time - dayInMilli) &&(!eventsSorted.containsKey(temp) || eventsSorted.get(temp).getPopularity() < events.get(i).getPopularity()))
+            else if(searchTime == 1 && events.get(i).getStartTime() < (time + weekInMilli) &&(!eventsSorted.containsKey(temp) || eventsSorted.get(temp).getPopularity() < events.get(i).getPopularity()))
             {
                 eventsSorted.put(temp,events.get(i));
             }
-            else if(searchTime == 2 && events.get(i).getStartTime() > (time - weekInMilli) &&(!eventsSorted.containsKey(temp) || eventsSorted.get(temp).getPopularity() < events.get(i).getPopularity()))
+            else if(searchTime == 2 && events.get(i).getStartTime() < (time + dayInMilli) &&(!eventsSorted.containsKey(temp) || eventsSorted.get(temp).getPopularity() < events.get(i).getPopularity()))
             {
                 eventsSorted.put(temp,events.get(i));
             }

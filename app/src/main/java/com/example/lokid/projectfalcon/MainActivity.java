@@ -482,6 +482,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.event_list, menu);
 
+
         return true;
     }
 
@@ -494,12 +495,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.hour_24) {
+            database.setSearchTime(2);
+            reDrawPins();
             return true;
         }
         if (id == R.id.days_7) {
+            database.setSearchTime(1);
+            reDrawPins();
             return true;
         }
         if (id == R.id.all_time) {
+            database.setSearchTime(0);
+            reDrawPins();
             return true;
         }
 
