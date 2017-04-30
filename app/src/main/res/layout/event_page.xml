@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/eventPageLayout"
     android:layout_width="match_parent"
@@ -19,62 +20,66 @@
         android:id="@+id/title_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
+        android:layout_marginLeft="15dp"
         android:layout_below="@+id/imageView2"
         android:layout_centerHorizontal="false"
+        android:layout_centerInParent="false"
         android:text="Title"
-        android:textAlignment="center"
-        android:textSize="18sp" />
+        android:textAppearance="@android:style/TextAppearance.Material.Title" />
 
     <TextView
         android:id="@+id/Description_Box"
         android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:text="Description"
-        android:textSize="@dimen/activity_vertical_margin"
-        android:layout_below="@+id/event_type_box"
-        android:layout_alignStart="@+id/event_type_box"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/title_box"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:layout_marginTop="19dp"
-        android:layout_alignParentEnd="true" />
+        android:gravity="left"
+        android:text="Description"
+        android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     <TextView
         android:id="@+id/start_time_box"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Start Time:"
-        android:textSize="@dimen/activity_vertical_margin"
+        android:layout_alignStart="@+id/end_time_box"
+        android:layout_below="@+id/Description_Box"
         android:layout_marginTop="16dp"
-        android:layout_below="@+id/title_box"
-        android:layout_alignStart="@+id/end_time_box" />
+        android:text="Start Time:"
+        android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     <TextView
         android:id="@+id/end_time_box"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="End Time:"
-        android:textSize="@dimen/activity_vertical_margin"
-        android:layout_below="@+id/start_time_box"
         android:layout_alignStart="@+id/event_type_box"
-        android:layout_marginTop="13dp" />
+        android:layout_below="@+id/start_time_box"
+        android:layout_marginTop="13dp"
+        android:text="End Time:"
+        android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     <TextView
         android:id="@+id/event_type_box"
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/end_time_box"
+        android:layout_marginBottom="15dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="13dp"
         android:text="Event type:"
-        android:textSize="@dimen/activity_vertical_margin"
-        android:layout_marginStart="16dp"
-        android:layout_below="@+id/end_time_box"
-        android:layout_alignParentStart="true" />
+        android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     <Button
         android:id="@+id/event_location_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="More Events at this Location"
-        android:layout_below="@+id/Description_Box"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/event_type_box"
+        android:layout_centerHorizontal="true"
+        style="@android:style/Widget.Material.Button.Colored"/>
 
 </RelativeLayout>

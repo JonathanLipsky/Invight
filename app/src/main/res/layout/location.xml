@@ -20,19 +20,21 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/mImageView"
         android:layout_centerHorizontal="true"
-        android:text="Location Name: "
         android:layout_marginLeft="15dp"
-        android:textAppearance="@android:style/TextAppearance.Material.Medium" />
+        android:text="Location Name: "
+        android:textAppearance="@android:style/TextAppearance.Material.Title" />
 
     <TextView
         android:id="@+id/textLocationNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/textLocationName"
-        android:layout_marginTop="15dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:clickable="true"
         android:text="Location Number: "
+        android:textAllCaps="false"
         android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     <TextView
@@ -41,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/textLocationNumber"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="5dp"
         android:layout_marginLeft="15dp"
         android:text="Location Address: "
         android:textAppearance="@android:style/TextAppearance.Material.Medium" />

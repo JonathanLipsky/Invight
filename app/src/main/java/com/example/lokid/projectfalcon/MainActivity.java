@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,7 +24,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -258,12 +261,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    private String location_number;
     private void displayPlace(Place place) {
         if (place == null)
             return;
         String location_name = "";
         String location_address = "";
-        String location_number = "";
+        location_number = "";
 
         String content = "";
         if (!TextUtils.isEmpty(place.getName())) {
@@ -293,7 +297,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mTextView2.setText(location_address);
 
         TextView mTextView3 = (TextView) layout.findViewById(R.id.textLocationNumber);
-        mTextView3.setText(location_number);
+
+        SpannableString phone = new SpannableString(location_number);
+        phone.setSpan(new UnderlineSpan(), 0, phone.length(), 0);
+        mTextView3.setText(phone);
+
+        mTextView3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", location_number, null));
+                startActivity(intent);
+            }
+        });
 
         TextView mTextView = (TextView) layout.findViewById(R.id.textLocationName);
         mTextView.setText(location_name);
