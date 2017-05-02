@@ -78,6 +78,7 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 //import static com.example.lokid.projectfalcon.R.id.toolbar;
 
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Context mContext;
     private RelativeLayout mRelativeLayout;
     private ClusterManager<Event> mClusterManager;
-    private DatabaseHandler database;
+    private static DatabaseHandler database;
     private LatLng mapCenter;
     private LatLng mapCorner;
     private Profile userProfile;
@@ -219,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        activity = this;
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
@@ -343,8 +345,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mTextView.setText(location_name);
 
         final LatLng position = place.getLatLng();
+        final String fLocationAdress = location_address;
 
         Button button = (Button) layout.findViewById(R.id.buttonCreateEventPopUp);
+        Button btnList = (Button)layout.findViewById(R.id.buttonEvents);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -354,12 +358,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Bundle bundle = new Bundle();
                 bundle.putDouble("lat", position.latitude);
                 bundle.putDouble("lng", position.longitude);
+                bundle.putString("address",fLocationAdress);
                 fragment.setArguments(bundle);
                 FragmentManager manager = getSupportFragmentManager();
                 manager.beginTransaction()
                         .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
                         .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
 
+            }
+        });
+
+        btnList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pwindo.dismiss();
+                sfm.beginTransaction().hide(mapFragment).commit();
+                Fragment fragment = new event_list();
+                Bundle bundle = new Bundle();
+                bundle.putDouble("lat", position.latitude);
+                bundle.putDouble("lng", position.longitude);
+                fragment.setArguments(bundle);
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                        .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
             }
         });
 
@@ -725,6 +747,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void reDrawPins()
     {
         //redraws pins only if the map has changed
+        if(database.isSearching())
+            return;
         VisibleRegion vRegion = mMap.getProjection().getVisibleRegion();
         LatLng cen = vRegion.latLngBounds.getCenter();
         LatLng corn = vRegion.latLngBounds.northeast;
@@ -773,5 +797,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             reDrawPins();
         }
 
+
+
+    }
+    public static DatabaseHandler getDatabaseReference()
+    {
+        return database;
     }
 }

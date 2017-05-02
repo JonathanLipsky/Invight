@@ -32,15 +32,18 @@ import java.util.LinkedList;
 public class DatabaseHandler {
 
     private HashMap<String,GeoLocation> keys;
+    private HashMap<String,GeoLocation> tempKeys;
     private int numberOfKeys;
     private int keysAddedCurrently;
     private ArrayList<Event> events;
+    private ArrayList<Event> tempEvents;
     private DatabaseReference root;
     private DataListener lis = new DataListener();
     private GeoFire fire;
     private GeoListener listener;
     private RetrieveEventListener eventListener;
     private int searchTime;
+    private boolean searching;
     private final long dayInMilli = 86400000;
     private final long weekInMilli = 604800000;
 
@@ -48,7 +51,10 @@ public class DatabaseHandler {
     {
         keys = new HashMap<>();
         events = new ArrayList<>(50);
+        tempEvents = new ArrayList<>();
+        tempKeys = new HashMap<>();
         searchTime = 0;
+        searching = false;
     }
 
     public static void addEvent(Event event) {
@@ -63,11 +69,9 @@ public class DatabaseHandler {
 
     public void retrieveEvents(Location center, Location corner)
     {
+        searching = true;
         numberOfKeys = 0;
         keysAddedCurrently = 0;
-        keys.clear();
-        events.clear();
-        root = FirebaseDatabase.getInstance().getReference().child("Events");
         fire = new GeoFire(FirebaseDatabase.getInstance().getReference().child("Event_Locations"));
         GeoQuery query = fire.queryAtLocation(new GeoLocation(center.getLatitude(),center.getLongitude()),center.distanceTo(corner)/1000);
         listener = new GeoListener();
@@ -80,7 +84,12 @@ public class DatabaseHandler {
             searchTime = time;
     }
 
-    public Event[] getEvents(LatLng position)
+    public void eventLiked(String key)
+    {
+        //still gotta do
+    }
+
+    public ArrayList<Event> getEvents(LatLng position)
     {
         ArrayList<Event> temp = new ArrayList<>();
         for(int i = 0; i < events.size(); i++)
@@ -88,10 +97,10 @@ public class DatabaseHandler {
             LatLng pos = events.get(i).getPosition();
             if(pos.longitude == position.longitude && pos.latitude == position.latitude)
             {
-                temp.add(temp.get(i));
+                temp.add(events.get(i));
             }
         }
-        return (Event[])temp.toArray();
+        return temp;
     }
 
     public Event getSmartEvent()
@@ -134,20 +143,29 @@ public class DatabaseHandler {
 
     private void addKeys(int amount)
     {
+        numberOfKeys = amount;
+        if(numberOfKeys == 0)
+        {
+            searching = false;
+            return;
+        }
         Iterator<String> keys = this.keys.keySet().iterator();
         while(keys.hasNext()) {
             root = FirebaseDatabase.getInstance().getReference().child("Events");
             root = root.child(keys.next());
             root.addListenerForSingleValueEvent(lis);
         }
-        numberOfKeys = amount;
     }
 
     private void addValue(Event e){
-       events.add(e);
+        tempEvents.add(e);
         keysAddedCurrently++;
-        if(numberOfKeys == keysAddedCurrently)
-           returnSortedEvents();
+        if(numberOfKeys == keysAddedCurrently) {
+            events = tempEvents;
+            tempEvents = new ArrayList<>();
+            searching = false;
+            returnSortedEvents();
+        }
     }
 
     private void returnSortedEvents()
@@ -214,7 +232,7 @@ public class DatabaseHandler {
         @Override
         public void onKeyEntered(String key, GeoLocation location)
         {
-            keys.put(key,location);
+            tempKeys.put(key,location);
             numEvents++;
         }
 
@@ -230,6 +248,8 @@ public class DatabaseHandler {
 
         @Override
         public void onGeoQueryReady() {
+            keys = tempKeys;
+            tempKeys = new HashMap<>();
             addKeys(numEvents);
         }
 
@@ -268,6 +288,12 @@ public class DatabaseHandler {
         void getEvents(Event[] events);
         void getProfile(Profile profile);
     }
+
+    public boolean isSearching()
+    {
+        return searching;
+    }
+
 
 
 }
