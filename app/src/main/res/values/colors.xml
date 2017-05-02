@@ -6,4 +6,5 @@
     <color name="dialog_button_color">#26C6DA</color>
     <color name="system_blue">#0000ff</color>
     <color name="pink">#E91E63</color>
+    <color name = "blue">#3F51B5</color>
 </resources>
