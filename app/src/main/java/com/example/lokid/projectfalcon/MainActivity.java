@@ -1,8 +1,10 @@
 package com.example.lokid.projectfalcon;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,6 +29,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,6 +42,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.example.lokid.projectfalcon.DatabaseHandler.RetrieveEventListener;
 import com.google.android.gms.common.ConnectionResult;
@@ -95,8 +99,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LatLng mapCenter;
     private LatLng mapCorner;
     private Profile userProfile;
-
+    private ViewFlipper viewFlipper;
+    private View tutorialLayout;
+    private Button next;
     private PopupWindow mPopupWindow;
+    private Activity activity = this;
     LocationRequest mLocationRequest;
     Location mLastLocation;
     Marker mCurrLocationMarker;
@@ -108,6 +115,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_list);
+
+        final String PREFS_NAME = "MyPrefsFile";
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+
+        if (settings.getBoolean("my_first_time", true)) {
+            //the app is being launched for first time, do something
+            Log.d("Comments", "First time");
+
+            Toast.makeText(this, "First Time", Toast.LENGTH_LONG).show();
+
+            Intent intent = new Intent(this, IntroActivity.class);
+            startActivity(intent);
+
+            // record the fact that the app has been started at least once
+            settings.edit().putBoolean("my_first_time", false).commit();
+
+        }
+
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -175,6 +202,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         sfm = getSupportFragmentManager();
         sfm.beginTransaction().add(R.id.mapFrame, mapFragment).commit();
+
+
 
     }
 
@@ -334,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-
+        pwindo.setAnimationStyle(R.style.Animation);
         pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
         //mPopupWindow.showAtLocation(mRelativeLayout, Gravity.CENTER,0,0);
 
@@ -643,6 +672,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         cal.setTimeInMillis(item.getEndTime());
         ((TextView) layout.findViewById(R.id.end_time_box)).setText("End Time :  " + cal.getTime());
 
+        pwindo.setAnimationStyle(R.style.Animation);
         pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
         return false;
     }

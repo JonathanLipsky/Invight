@@ -22,7 +22,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancle"
+            android:text="Cancel"
             android:textColor="@color/dialog_button_color"
             android:id="@+id/buttonCancle"
             style="?android:borderlessButtonStyle"/>

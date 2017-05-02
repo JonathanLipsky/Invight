@@ -35,7 +35,8 @@
         android:clickable="true"
         android:text="Location Number: "
         android:textAllCaps="false"
-        android:textAppearance="@android:style/TextAppearance.Material.Medium" />
+        android:textAppearance="@android:style/TextAppearance.Material.Medium"
+        android:textColor="@color/cast_libraries_material_featurehighlight_outer_highlight_default_color" />
 
     <TextView
         android:id="@+id/textLocationAddress"
@@ -43,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/textLocationNumber"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="15dp"
         android:layout_marginLeft="15dp"
         android:text="Location Address: "
         android:textAppearance="@android:style/TextAppearance.Material.Medium" />
