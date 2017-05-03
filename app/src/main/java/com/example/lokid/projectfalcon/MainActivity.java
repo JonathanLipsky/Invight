@@ -685,11 +685,37 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         cal.setTimeInMillis(item.getEndTime());
         ((TextView) layout.findViewById(R.id.end_time_box)).setText("End Time :  " + cal.getTime());
 
+        String type = item.getEventType();
+
+
+        ((ImageView) layout.findViewById(R.id.eventPic)).setImageResource(EventTypePic(type));
+
         pwindo.setAnimationStyle(R.style.Animation);
         pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
         return false;
     }
 
+
+    private int EventTypePic(String event)
+    {
+        int eventName;
+        switch(event)
+        {
+            case "Bar": eventName = R.drawable.bar_event; break;
+            case "Community": eventName = R.drawable.community_event; break;
+            case "Concert": eventName = R.drawable.concert_event; break;
+            case "Education": eventName = R.drawable.school_event; break;
+            case "Fund Raiser": eventName = R.drawable.fundraising_event; break;
+            case "Get Together": eventName = R.drawable.get_together_event; break;
+            case "Kids": eventName = R.drawable.kids_event; break;
+            case "Party": eventName = R.drawable.party_event; break;
+            case "Political": eventName = R.drawable.political_event; break;
+            case "Sport": eventName = R.drawable.sporting_event; break;
+            default: eventName = R.drawable.get_together_event; break;
+        }
+
+        return eventName;
+    }
 
     private int getEventType(String event)
     {
