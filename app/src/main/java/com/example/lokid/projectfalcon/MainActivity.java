@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 pwindo.dismiss();
                 sfm.beginTransaction().hide(mapFragment).commit();
-                Fragment fragment = new event_list();
+                Fragment fragment = new CardFragment();
                 Bundle bundle = new Bundle();
                 bundle.putDouble("lat", position.latitude);
                 bundle.putDouble("lng", position.longitude);
