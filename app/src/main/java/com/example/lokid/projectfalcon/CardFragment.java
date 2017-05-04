@@ -1,6 +1,7 @@
 package com.example.lokid.projectfalcon;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,16 +9,21 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+
+import static android.content.Intent.EXTRA_SUBJECT;
 
 
 public class CardFragment extends Fragment {
@@ -34,8 +40,11 @@ public class CardFragment extends Fragment {
         String eventsAddress = bundle.getString("address");
         Event e1 = new Event();
         e1.setTitle("Willis Tower");
-        e1.setEventType("Bar");
-        listitems.add(e1);
+        e1.setEventType("Community");
+        for(int i = 0; i < 6; i++){
+            listitems.add(e1);
+        }
+
     }
 
     @Override
@@ -79,11 +88,11 @@ public class CardFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(final MyViewHolder holder, int position) {
-
+            holder.item=list.get(position);
             holder.titleTextView.setText(list.get(position).getTitle());
 
             holder.coverImageView.setImageResource(getEventType(list.get(position).getEventType()));
-            //holder.coverImageView.setTag(list.get(position).getImageResourceId());
+            holder.coverImageView.setTag(getEventType(list.get(position).getEventType()));
             holder.likeImageView.setTag(R.drawable.ic_like);
 
         }
@@ -93,16 +102,16 @@ public class CardFragment extends Fragment {
             int eventName;
             switch(event)
             {
-                case "Bar": eventName = R.drawable.bar; break;
-                case "Community": eventName = R.drawable.community; break;
-                case "Concert": eventName = R.drawable.concert; break;
-                case "Education": eventName = R.drawable.education; break;
+                case "Bar": eventName = R.drawable.bar_event; break;
+                case "Community": eventName = R.drawable.community_event; break;
+                case "Concert": eventName = R.drawable.concert_event; break;
+                case "Education": eventName = R.drawable.school_event; break;
                 case "Fund Raiser": eventName = R.drawable.fundraiser; break;
-                case "Get Together": eventName = R.drawable.get_together; break;
-                case "Kids": eventName = R.drawable.kids; break;
-                case "Party": eventName = R.drawable.party; break;
-                case "Political": eventName = R.drawable.political; break;
-                case "Sport": eventName = R.drawable.sport; break;
+                case "Get Together": eventName = R.drawable.get_together_event; break;
+                case "Kids": eventName = R.drawable.kids_event; break;
+                case "Party": eventName = R.drawable.party_event; break;
+                case "Political": eventName = R.drawable.political_event; break;
+                case "Sport": eventName = R.drawable.sporting_event; break;
                 default: eventName = 0; break;
             }
             return eventName;
@@ -120,6 +129,7 @@ public class CardFragment extends Fragment {
         public ImageView coverImageView;
         public ImageView likeImageView;
         public ImageView shareImageView;
+        public Event item;
 
         public MyViewHolder(View v) {
             super(v);
@@ -134,14 +144,14 @@ public class CardFragment extends Fragment {
 
                     int id = (int)likeImageView.getTag();
                         if( id == R.drawable.ic_like){
-
+                            item.setPopularity(item.getPopularity()+1);
                             likeImageView.setTag(R.drawable.ic_liked);
                             likeImageView.setImageResource(R.drawable.ic_liked);
 
                             Toast.makeText(getActivity(),titleTextView.getText()+" added to favourites", Toast.LENGTH_SHORT).show();
 
                         }else{
-
+                            item.setPopularity(item.getPopularity()-1);
                             likeImageView.setTag(R.drawable.ic_like);
                             likeImageView.setImageResource(R.drawable.ic_like);
                             Toast.makeText(getActivity(),titleTextView.getText()+" removed from favourites", Toast.LENGTH_SHORT).show();
@@ -151,33 +161,52 @@ public class CardFragment extends Fragment {
 
                 }
             });
-
-
-
-            /*shareImageView.setOnClickListener(new View.OnClickListener() {
+            coverImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    View layout = inflater.inflate(R.layout.event_page, (ViewGroup) v.findViewById(R.id.eventPageLayout), false);
+                    final PopupWindow pwindo = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+                    ((TextView) layout.findViewById(R.id.title_box)).setText(item.getTitle());
+                    ((TextView) layout.findViewById(R.id.Description_Box)).setText(item.getSnippet());
+                    ((TextView) layout.findViewById(R.id.event_type_box)).setText("Event Type:    " + item.getEventType());
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(item.getStartTime());
+                    ((TextView) layout.findViewById(R.id.start_time_box)).setText("Start Time :  " + cal.getTime());
+                    cal.setTimeInMillis(item.getEndTime());
+                    ((TextView) layout.findViewById(R.id.end_time_box)).setText("End Time :  " + cal.getTime());
+
+                    pwindo.setAnimationStyle(R.style.Animation);
+                    pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
+                }
+            });
 
 
 
-
-
+            shareImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
                     Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                             "://" + getResources().getResourcePackageName(coverImageView.getId())
                             + '/' + "drawable" + '/' + getResources().getResourceEntryName((int)coverImageView.getTag()));
 
-
+                    String text = "You have been invited to ";
+                    text += item.getTitle();
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
+
+                   // shareIntent.putExtra(EXTRA_SUBJECT, text);
+
                     shareIntent.putExtra(Intent.EXTRA_STREAM,imageUri);
                     shareIntent.setType("image/jpeg");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
 
-
-
                 }
-            });*/
+            });
 
 
 
