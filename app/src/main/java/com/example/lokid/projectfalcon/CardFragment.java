@@ -61,8 +61,6 @@ public class CardFragment extends Fragment {
         listitems.add(e1);
     }
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -118,16 +116,16 @@ public class CardFragment extends Fragment {
             int eventName;
             switch(event)
             {
-                case "Bar": eventName = R.drawable.bar_event; break;
-                case "Community": eventName = R.drawable.community_event; break;
-                case "Concert": eventName = R.drawable.concert_event; break;
-                case "Education": eventName = R.drawable.school_event; break;
-                case "Fund Raiser": eventName = R.drawable.fundraiser; break;
-                case "Get Together": eventName = R.drawable.get_together_event; break;
-                case "Kids": eventName = R.drawable.kids_event; break;
-                case "Party": eventName = R.drawable.party_event; break;
-                case "Political": eventName = R.drawable.political_event; break;
-                case "Sport": eventName = R.drawable.sporting_event; break;
+                case "Bar": eventName = R.drawable.bar_hdpi; break;
+                case "Community": eventName = R.drawable.community_hdpi; break;
+                case "Concert": eventName = R.drawable.concert_hdpi; break;
+                case "Education": eventName = R.drawable.education_hdpi; break;
+                case "Fund Raiser": eventName = R.drawable.fundraiser_hdpi; break;
+                case "Get Together": eventName = R.drawable.get_together_hdpi; break;
+                case "Kids": eventName = R.drawable.kids_hdpi; break;
+                case "Party": eventName = R.drawable.party_hdpi; break;
+                case "Political": eventName = R.drawable.political_hdpi; break;
+                case "Sport": eventName = R.drawable.sport_hdpi; break;
                 default: eventName = 0; break;
             }
             return eventName;
