@@ -35,17 +35,33 @@ public class CardFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
-        LatLng pos = new LatLng(bundle.getDouble("lat"),bundle.getDouble("lng"));
-        listitems = MainActivity.getDatabaseReference().getEvents(pos);
-        String eventsAddress = bundle.getString("address");
+        int type = bundle.getInt("type");
+        if(type == 0) {
+            LatLng pos = new LatLng(bundle.getDouble("lat"), bundle.getDouble("lng"));
+            listitems = MainActivity.getDatabaseReference().getEvents(pos);
+            //String eventsAddress = bundle.getString("address");
+        }
+        else if(type == 1){
+            listitems = MainActivity.getDatabaseReference().getFollowedEvents();
+        }
+        else if(type == 2)
+        {
+            listitems = MainActivity.getDatabaseReference().getSmartEvents();
+        }
+        if(listitems == null)
+            listitems = new ArrayList<>();
         Event e1 = new Event();
         e1.setTitle("Willis Tower");
         e1.setEventType("Community");
         for(int i = 0; i < 6; i++){
             listitems.add(e1);
         }
+        e1.setEventType("Bar");
 
+        listitems.add(e1);
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -144,14 +160,15 @@ public class CardFragment extends Fragment {
 
                     int id = (int)likeImageView.getTag();
                         if( id == R.drawable.ic_like){
-                            item.setPopularity(item.getPopularity()+1);
+
+                            MainActivity.getDatabaseReference().eventLiked(item,true);
                             likeImageView.setTag(R.drawable.ic_liked);
                             likeImageView.setImageResource(R.drawable.ic_liked);
 
                             Toast.makeText(getActivity(),titleTextView.getText()+" added to favourites", Toast.LENGTH_SHORT).show();
 
                         }else{
-                            item.setPopularity(item.getPopularity()-1);
+                            MainActivity.getDatabaseReference().eventLiked(item,false);
                             likeImageView.setTag(R.drawable.ic_like);
                             likeImageView.setImageResource(R.drawable.ic_like);
                             Toast.makeText(getActivity(),titleTextView.getText()+" removed from favourites", Toast.LENGTH_SHORT).show();

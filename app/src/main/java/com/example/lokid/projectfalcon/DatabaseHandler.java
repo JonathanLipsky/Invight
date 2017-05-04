@@ -2,6 +2,7 @@ package com.example.lokid.projectfalcon;
 
 import android.location.Location;
 import android.provider.Settings;
+import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
@@ -47,6 +48,7 @@ public class DatabaseHandler {
     private final long dayInMilli = 86400000;
     private final long weekInMilli = 604800000;
     private Profile mainUser;
+    private ArrayList<Event> followedEvents = new ArrayList<>(10);
 
     public DatabaseHandler()
     {
@@ -104,48 +106,115 @@ public class DatabaseHandler {
         return popularEvents;
     }
 
-
-    public void eventLiked(String key, int val,String eventType)
+    public ArrayList<Event> getFollowedEvents()
     {
-        root = FirebaseDatabase.getInstance().getReference().child("Events").child(key).child("popularity");
-        root.setValue(val);
+        return followedEvents;
+    }
+
+
+    public void eventLiked(Event e,boolean liked)
+    {
+        if(e.getKey() == null)
+            return;
+        root = FirebaseDatabase.getInstance().getReference().child("Events").child(e.getKey()).child("popularity");
+        if(liked)
+            e.setPopularity(e.getPopularity()+1);
+        else
+            e.setPopularity(e.getPopularity()-1);
+        root.setValue(e.getPopularity());
+        if(mainUser == null)
+            return;
         root = FirebaseDatabase.getInstance().getReference().child("Profiles").child(mainUser.getUsername());
 
-        if(mainUser.getLocationsPreference().containsKey(eventType))
-        {
-           root.child("locationsPreference").child(eventType).setValue(mainUser.getLocationsPreference().get(eventType)+1);
+        if(liked) {
+            if(mainUser.getLocationsPreference().containsKey(e.getEventType())) {
+                mainUser.getLocationsPreference().put(e.getEventType(), mainUser.getLocationsPreference().get(e.getEventType()) + 1);
+                root.child("favEvents").child(e.getKey()).setValue(e.getPopularity());
+            }
+            else
+                root.child("favEvents").child(e.getKey()).setValue(1);
         }
+        else if(!liked){
+            if(mainUser.getLocationsPreference().containsKey(e.getEventType())) {
+                mainUser.getLocationsPreference().put(e.getEventType(), mainUser.getLocationsPreference().get(e.getEventType()) - 1);
+                root.child("favEvents").child(e.getKey()).removeValue();
+            }
+        }
+        if(mainUser.getLocationsPreference().containsKey(e.getEventType()))
+            root.child("locationsPreference").child(e.getEventType()).setValue(mainUser.getLocationsPreference().get(e.getEventType()));
         else
-            root.child("locationsPreference").child(eventType).setValue(1);
+            root.child("locationsPreference").child(e.getEventType()).setValue(1);
 
-        root.child("favEvents").child(key).setValue(key);
         getUser(mainUser.getUsername(),mainUser.getPassword());
     }
 
     public ArrayList<Event> getEvents(LatLng position)
     {
         //add in filter*
+        Long time = (System.currentTimeMillis());
         ArrayList<Event> temp = new ArrayList<>();
         for(int i = 0; i < events.size(); i++)
         {
             LatLng pos = events.get(i).getPosition();
             if(pos.longitude == position.longitude && pos.latitude == position.latitude)
             {
-                temp.add(events.get(i));
+                if(searchTime == 0)
+                    temp.add(events.get(i));
+                else if(searchTime == 1 && events.get(i).getStartTime() < (time + weekInMilli))
+                    temp.add(events.get(i));
+                else if(searchTime == 3 && events.get(i).getStartTime() < (time + dayInMilli))
+                    temp.add(events.get(i));
             }
         }
         return temp;
     }
 
-    public Event getSmartEvent()
+    public ArrayList<Event> getSmartEvents()
     {
-        if(events.size() == 0) {
-            int randomLoc = (int) (Math.random() * events.size());
-            return events.get(randomLoc);
-        }
-        else
+        if(mainUser == null)
             return null;
+        ArrayList<Pair<Event,Integer>> tempEvents = new ArrayList<>(10);
+        Iterator<Map.Entry<String,Integer>> iter = mainUser.getLocationsPreference().entrySet().iterator();
+        while(iter.hasNext())
+        {
+            Map.Entry<String,Integer> entry = iter.next();
+            Event temp = getMostPopularEvent(entry.getKey());
+            if(temp != null) {
+                if (tempEvents.size() == 0)
+                    tempEvents.add(new Pair<>(temp, entry.getValue()));
+                else {
+                    for (int i = 0; i < tempEvents.size(); i++) {
+                        if (tempEvents.get(i).second < entry.getValue())
+                            tempEvents.add(new Pair<>(temp, entry.getValue()));
+                    }
+                }
+            }
+        }
+        ArrayList<Event> temp = new ArrayList();
+        for(int i = 0; i < tempEvents.size(); i++)
+        {
+            temp.add(tempEvents.get(i).first);
+        }
+        return temp;
     }
+
+    public Event getMostPopularEvent(String type)
+    {
+        Event tempEvent = null;
+        for(int i = 0; i < events.size();i++)
+        {
+            if(tempEvent == null && events.get(i).getEventType().equals(type))
+            {
+                tempEvent = events.get(i);
+            }
+            else if(events.get(i).getEventType().equals(type) && events.get(i).getPopularity() > tempEvent.getPopularity())
+            {
+                tempEvent = events.get(i);
+            }
+        }
+        return tempEvent;
+    }
+
 
     public void addUser(Profile profile)
     {
@@ -165,6 +234,7 @@ public class DatabaseHandler {
                     Profile profile = dataSnapshot.getValue(Profile.class);
                     if(profile.getPassword().equals(password)) {
                         mainUser = profile;
+                        getFevents();
                     }
                 }
             }
@@ -175,6 +245,30 @@ public class DatabaseHandler {
             }
         });
     }
+
+    private void getFevents()
+    {
+        if(mainUser == null || mainUser.getFavEvents().size() == 0)
+            return;
+        Iterator<String> iter = mainUser.getFavEvents().keySet().iterator();
+        followedEvents.clear();
+        while(iter.hasNext())
+        {
+            root = FirebaseDatabase.getInstance().getReference().child("Events").child(iter.next());
+            root.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    followedEvents.add(dataSnapshot.getValue(Event.class));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
 
     private void addKeys(int amount)
     {

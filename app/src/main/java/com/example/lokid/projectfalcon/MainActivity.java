@@ -178,7 +178,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onClusterItemClick(database.getSmartEvent());
+                sfm.beginTransaction().hide(mapFragment).commit();
+                Fragment fragment = new CardFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt("type",2);
+                fragment.setArguments(bundle);
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                        .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
+               // onClusterItemClick(database.getSmartEvent());
                 Snackbar.make(view, "", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -239,8 +248,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         database.addEventLister(this);
         mapCenter = new LatLng(0,0);
         mapCorner = new LatLng(0,0);
-        reDrawPins();
-        //database.getUser("dillon","odonnell");
+        reDrawPins(true);
+        database.getUser("dillon","odonnell");
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
@@ -342,6 +351,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Bundle bundle = new Bundle();
                 bundle.putDouble("lat", position.latitude);
                 bundle.putDouble("lng", position.longitude);
+                bundle.putInt("type",0);
                 fragment.setArguments(bundle);
                 FragmentManager manager = getSupportFragmentManager();
                 manager.beginTransaction()
@@ -361,6 +371,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 bundle.putDouble("lat", position.latitude);
                 bundle.putDouble("lng", position.longitude);
                 bundle.putString("address",fLocationAdress);
+                bundle.putInt("type",0);
                 fragment.setArguments(bundle);
                 FragmentManager manager = getSupportFragmentManager();
                 manager.beginTransaction()
@@ -546,18 +557,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //noinspection SimplifiableIfStatement
         if (id == R.id.hour_24) {
             database.setSearchTime(2);
-            reDrawPins();
+            reDrawPins(true);
             return true;
         }
         if (id == R.id.days_7) {
             database.setSearchTime(1);
-            reDrawPins();
+            reDrawPins(true);
             return true;
         }
         if (id == R.id.all_time) {
             database.setSearchTime(0);
-            reDrawPins();
-            //database.eventLiked("test",2,"Bar");
+            reDrawPins(true);
             return true;
         }
 
@@ -601,6 +611,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             sfm.beginTransaction().setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
                     .show(mapFragment).commit();
         } else if (id == R.id.nav_favorites) {
+
+            fragment = new CardFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt("type",1);
+            fragment.setArguments(bundle);
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction()
+                    .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                    .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
 
         } else if (id == R.id.nav_share) {
 
@@ -765,7 +784,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mClusterManager.cluster();
     }
 
-    public void reDrawPins()
+    public void reDrawPins(boolean override)
     {
         //redraws pins only if the map has changed
         if(database.isSearching())
@@ -773,7 +792,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         VisibleRegion vRegion = mMap.getProjection().getVisibleRegion();
         LatLng cen = vRegion.latLngBounds.getCenter();
         LatLng corn = vRegion.latLngBounds.northeast;
-        if( corn.longitude != mapCorner.longitude || corn.latitude != mapCorner.latitude || cen.latitude != mapCenter.latitude || cen.longitude != mapCenter.longitude) {
+        if( override || corn.longitude != mapCorner.longitude || corn.latitude != mapCorner.latitude || cen.latitude != mapCenter.latitude || cen.longitude != mapCenter.longitude) {
             Location center = new Location("");
             Location corner = new Location("");
             center.setLatitude(cen.latitude);
@@ -815,7 +834,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         @Override
         public void onCameraIdle() {
-            reDrawPins();
+            reDrawPins(false);
         }
 
 

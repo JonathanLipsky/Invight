@@ -2,6 +2,7 @@ package com.example.lokid.projectfalcon;
 
 import android.util.Pair;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 /**
@@ -13,11 +14,13 @@ public class Profile {
     private String password;
     private Map<String,Integer> favEvents;
     private Map<String,Integer> locationsPreference;
+    private ArrayList<Event> followedEvents = new ArrayList<>(10);
 
     public Profile()
     {
         favEvents = new HashMap<>();
         locationsPreference = new HashMap<>();
+
     }
 
     public Profile(String username,String password)
@@ -68,4 +71,5 @@ public class Profile {
     public void setLocationsPreference(Map<String, Integer> locationsPreference) {
         this.locationsPreference = locationsPreference;
     }
+
 }
