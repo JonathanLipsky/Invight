@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static DatabaseHandler database;
     private LatLng mapCenter;
     private LatLng mapCorner;
-    private Profile userProfile;
     private ViewFlipper viewFlipper;
     private View tutorialLayout;
     private Button next;
@@ -140,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         mapFragment = SupportMapFragment.newInstance();
         //mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
-
 
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
@@ -242,12 +240,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapCenter = new LatLng(0,0);
         mapCorner = new LatLng(0,0);
         reDrawPins();
-       // database.getUser("dillon","odonnell");
-        //Map<String,Integer> events = new HashMap<>();
-        //events.put("default",0);
-        //Map<String,String> loc = new HashMap<>();
-        //loc.put("default","default");
-        //database.addUser(new Profile("dillon","odonnell",events,loc));
+        //database.getUser("dillon","odonnell");
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
@@ -349,7 +342,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Bundle bundle = new Bundle();
                 bundle.putDouble("lat", position.latitude);
                 bundle.putDouble("lng", position.longitude);
-                bundle.putString("address",fLocationAdress);
                 fragment.setArguments(bundle);
                 FragmentManager manager = getSupportFragmentManager();
                 manager.beginTransaction()
@@ -368,6 +360,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Bundle bundle = new Bundle();
                 bundle.putDouble("lat", position.latitude);
                 bundle.putDouble("lng", position.longitude);
+                bundle.putString("address",fLocationAdress);
                 fragment.setArguments(bundle);
                 FragmentManager manager = getSupportFragmentManager();
                 manager.beginTransaction()
@@ -564,6 +557,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (id == R.id.all_time) {
             database.setSearchTime(0);
             reDrawPins();
+            //database.eventLiked("test",2,"Bar");
             return true;
         }
 
@@ -690,6 +684,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         ((ImageView) layout.findViewById(R.id.eventPic)).setImageResource(EventTypePic(type));
 
+        final LatLng position = item.getPosition();
+        Button button = (Button) layout.findViewById(R.id.event_location_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pwindo.dismiss();
+                sfm.beginTransaction().hide(mapFragment).commit();
+                Fragment fragment = new CardFragment();
+                Bundle bundle = new Bundle();
+                bundle.putDouble("lat", position.latitude);
+                bundle.putDouble("lng", position.longitude);
+                fragment.setArguments(bundle);
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                        .replace(R.id.content_event_list, fragment, fragment.getTag()).commit();
+            }
+        });
+
         pwindo.setAnimationStyle(R.style.Animation);
         pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
         return false;
@@ -750,15 +763,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             mClusterManager.addItem(e);
         }
         mClusterManager.cluster();
-    }
-
-    @Override
-    public void getProfile(Profile profile) {
-        if(profile != null)
-            userProfile = profile;
-        else{
-            //do something the user/password was entered incorrectly
-        }
     }
 
     public void reDrawPins()

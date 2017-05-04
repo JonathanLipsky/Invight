@@ -46,6 +46,7 @@ public class DatabaseHandler {
     private boolean searching;
     private final long dayInMilli = 86400000;
     private final long weekInMilli = 604800000;
+    private Profile mainUser;
 
     public DatabaseHandler()
     {
@@ -84,13 +85,46 @@ public class DatabaseHandler {
             searchTime = time;
     }
 
-    public void eventLiked(String key)
+    public Event[] mostPopularEventsInArea(int howMany)
     {
-        //still gotta do
+        Event[] popularEvents = new Event[howMany];
+        for (int i = 0; i < howMany; i++)
+        {
+            int largest = i;
+            for(int j = i+1; i < events.size();i++)
+            {
+                if(events.get(largest).getPopularity() < events.get(j).getPopularity())
+                    largest = j;
+            }
+            popularEvents[i] = events.get(largest);
+            events.remove(largest);
+            events.add(i,popularEvents[i]);
+        }
+
+        return popularEvents;
+    }
+
+
+    public void eventLiked(String key, int val,String eventType)
+    {
+        root = FirebaseDatabase.getInstance().getReference().child("Events").child(key).child("popularity");
+        root.setValue(val);
+        root = FirebaseDatabase.getInstance().getReference().child("Profiles").child(mainUser.getUsername());
+
+        if(mainUser.getLocationsPreference().containsKey(eventType))
+        {
+           root.child("locationsPreference").child(eventType).setValue(mainUser.getLocationsPreference().get(eventType)+1);
+        }
+        else
+            root.child("locationsPreference").child(eventType).setValue(1);
+
+        root.child("favEvents").child(key).setValue(key);
+        getUser(mainUser.getUsername(),mainUser.getPassword());
     }
 
     public ArrayList<Event> getEvents(LatLng position)
     {
+        //add in filter*
         ArrayList<Event> temp = new ArrayList<>();
         for(int i = 0; i < events.size(); i++)
         {
@@ -105,14 +139,19 @@ public class DatabaseHandler {
 
     public Event getSmartEvent()
     {
-        int randomLoc = (int)(Math.random() *events.size());
-        return events.get(randomLoc);
+        if(events.size() == 0) {
+            int randomLoc = (int) (Math.random() * events.size());
+            return events.get(randomLoc);
+        }
+        else
+            return null;
     }
 
     public void addUser(Profile profile)
     {
         root = FirebaseDatabase.getInstance().getReference().child("Profiles").child(profile.getUsername());
         root.setValue(profile);
+        getUser(profile.getUsername(),profile.getPassword());
     }
 
     public void getUser(String username, final String password)
@@ -124,14 +163,10 @@ public class DatabaseHandler {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue() != null ) {
                     Profile profile = dataSnapshot.getValue(Profile.class);
-                    if(profile.getPassword().equals(password))
-                        eventListener.getProfile(profile);
-                    else
-                        eventListener.getProfile(null);
+                    if(profile.getPassword().equals(password)) {
+                        mainUser = profile;
+                    }
                 }
-                else
-                    eventListener.getProfile(null);
-
             }
 
             @Override
@@ -286,7 +321,6 @@ public class DatabaseHandler {
 
     public interface RetrieveEventListener {
         void getEvents(Event[] events);
-        void getProfile(Profile profile);
     }
 
     public boolean isSearching()

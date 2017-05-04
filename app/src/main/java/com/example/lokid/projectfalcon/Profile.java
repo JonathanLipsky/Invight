@@ -12,28 +12,29 @@ public class Profile {
     private String username;
     private String password;
     private Map<String,Integer> favEvents;
-    private Map<String,String> favLocations;
+    private Map<String,Integer> locationsPreference;
 
     public Profile()
     {
         favEvents = new HashMap<>();
-        favLocations = new HashMap<>();
+        locationsPreference = new HashMap<>();
     }
 
     public Profile(String username,String password)
     {
+        super();
         favEvents = new HashMap<>();
-        favLocations = new HashMap<>();
+        locationsPreference = new HashMap<>();
         this.username = username;
         this.password = password;
     }
 
-    public Profile(String username,String password, HashMap<String,Integer> favEvents, HashMap<String,String> favLocations)
+    public Profile(String username,String password, HashMap<String,Integer> favEvents, HashMap<String,Integer> locationsPreference)
     {
         this.username = username;
         this.password = password;
         this.favEvents = favEvents;
-        this.favLocations = favLocations;
+        this.locationsPreference = locationsPreference;
     }
 
     public String getUsername() {
@@ -60,11 +61,11 @@ public class Profile {
         this.favEvents = favEvents;
     }
 
-    public Map<String, String> getFavLocations() {
-        return favLocations;
+    public Map<String, Integer> getLocationsPreference() {
+        return locationsPreference;
     }
 
-    public void setFavLocations(Map<String, String> favLocations) {
-        this.favLocations = favLocations;
+    public void setLocationsPreference(Map<String, Integer> locationsPreference) {
+        this.locationsPreference = locationsPreference;
     }
 }
