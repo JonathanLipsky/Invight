@@ -46,7 +46,7 @@ public class CardFragment extends Fragment {
             sponsor.setTitle("Bannana Stand");
             sponsor.setEventType("Community");
             sponsor.setIsPromoted(true);
-            listitems.add(sponsor);
+            listitems.add(0,sponsor);
             //String eventsAddress = bundle.getString("address");
         }
         else if(type == 1){
@@ -104,6 +104,7 @@ public class CardFragment extends Fragment {
             holder.item=list.get(position);
             holder.titleTextView.setText(list.get(position).getTitle());
             if (list.get(position).isPromoted()) {
+                holder.sponsorText.setText("*Sponsored");
                 holder.sponsorBar.setBackgroundColor(Color.parseColor("#FFFFBB33"));
             }
             holder.coverImageView.setImageResource(getEventType(list.get(position).getEventType()));
@@ -146,7 +147,7 @@ public class CardFragment extends Fragment {
         public ImageView coverImageView;
         public ImageView likeImageView;
         public ImageView shareImageView;
-
+        public TextView sponsorText;
         public LinearLayout sponsorBar;
         public Event item;
 
@@ -192,7 +193,7 @@ public class CardFragment extends Fragment {
 
         public MyViewHolder(View v) {
             super(v);
-
+            sponsorText = (TextView)v.findViewById(R.id.sponsorText);
             sponsorBar = (LinearLayout) v.findViewById(R.id.bottomSponsorbar);
             titleTextView = (TextView) v.findViewById(R.id.titleTextView);
             coverImageView = (ImageView) v.findViewById(R.id.coverImageView);

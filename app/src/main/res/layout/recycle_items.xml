@@ -59,7 +59,14 @@
             android:gravity="center|right"
             android:orientation="horizontal"
             android:id="@+id/bottomSponsorbar">
-
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/sponsorText"
+                android:gravity="start"
+                android:text=""
+                android:layout_marginRight="100dp"
+                android:textSize="25dp"/>
             <ImageView
                 android:id="@+id/likeImageView"
                 android:layout_width="@dimen/icon_width"
