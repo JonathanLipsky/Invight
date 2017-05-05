@@ -30,7 +30,7 @@ public class Event implements ClusterItem {
     private String key;
     private int popularity;
     private String eventType;
-    public boolean isPromoted = false;
+    public boolean isPromoted;
 
     public Event()
     {
@@ -42,6 +42,7 @@ public class Event implements ClusterItem {
         mTitle = null;
         mSnippet = null;
     }
+
 
     public Event(LatLng pos, String title, String snippet) {
         mPosition = pos;
@@ -71,6 +72,12 @@ public class Event implements ClusterItem {
    // @Override
     public String getSnippet() { return mSnippet; }
 
+    public boolean isPromoted(){
+        return isPromoted;
+    }
+    public void setIsPromoted(boolean isPromoted){
+        this.isPromoted = isPromoted;
+    }
     /**
      * Set the title of the marker
      * @param title string to be set as title

@@ -45,7 +45,7 @@ public class CardFragment extends Fragment {
             Event sponsor = new Event();
             sponsor.setTitle("Bannana Stand");
             sponsor.setEventType("Community");
-            sponsor.isPromoted = true;
+            sponsor.setIsPromoted(true);
             listitems.add(sponsor);
             //String eventsAddress = bundle.getString("address");
         }
@@ -103,7 +103,9 @@ public class CardFragment extends Fragment {
         public void onBindViewHolder(final MyViewHolder holder, int position) {
             holder.item=list.get(position);
             holder.titleTextView.setText(list.get(position).getTitle());
-
+            if (list.get(position).isPromoted()) {
+                holder.sponsorBar.setBackgroundColor(Color.parseColor("#FFFFBB33"));
+            }
             holder.coverImageView.setImageResource(getEventType(list.get(position).getEventType()));
             holder.coverImageView.setTag(getEventType(list.get(position).getEventType()));
             holder.likeImageView.setTag(R.drawable.ic_like);
@@ -144,6 +146,8 @@ public class CardFragment extends Fragment {
         public ImageView coverImageView;
         public ImageView likeImageView;
         public ImageView shareImageView;
+
+        public LinearLayout sponsorBar;
         public Event item;
 
         private int getEventType(String event)
@@ -188,10 +192,8 @@ public class CardFragment extends Fragment {
 
         public MyViewHolder(View v) {
             super(v);
-            if(item.isPromoted){
-                LinearLayout layout = (LinearLayout)v.findViewById(R.id.bottomSponsorbar);
-                layout.setBackgroundColor(Color.parseColor("#FFFFBB33"));
-            }
+
+            sponsorBar = (LinearLayout) v.findViewById(R.id.bottomSponsorbar);
             titleTextView = (TextView) v.findViewById(R.id.titleTextView);
             coverImageView = (ImageView) v.findViewById(R.id.coverImageView);
             likeImageView = (ImageView) v.findViewById(R.id.likeImageView);
