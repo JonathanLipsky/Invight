@@ -30,6 +30,7 @@ public class Event implements ClusterItem {
     private String key;
     private int popularity;
     private String eventType;
+    public boolean isPromoted = false;
 
     public Event()
     {

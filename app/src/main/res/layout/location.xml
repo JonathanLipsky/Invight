@@ -9,9 +9,9 @@
     <ImageView
         android:id="@+id/mImageView"
         android:layout_width="400dp"
-        android:layout_height="200dp"
+        android:layout_height="160dp"
         android:layout_marginBottom="20dp"
-        android:src="@drawable/willistower"
+        android:src="@drawable/general_hdpi"
          />
 
     <TextView

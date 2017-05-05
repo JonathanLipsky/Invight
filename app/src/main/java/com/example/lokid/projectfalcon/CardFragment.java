@@ -3,6 +3,7 @@ package com.example.lokid.projectfalcon;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +41,12 @@ public class CardFragment extends Fragment {
         if(type == 0) {
             LatLng pos = new LatLng(bundle.getDouble("lat"), bundle.getDouble("lng"));
             listitems = MainActivity.getDatabaseReference().getEvents(pos);
+
+            Event sponsor = new Event();
+            sponsor.setTitle("Bannana Stand");
+            sponsor.setEventType("Community");
+            sponsor.isPromoted = true;
+            listitems.add(sponsor);
             //String eventsAddress = bundle.getString("address");
         }
         else if(type == 1){
@@ -50,15 +58,6 @@ public class CardFragment extends Fragment {
         }
         if(listitems == null)
             listitems = new ArrayList<>();
-        Event e1 = new Event();
-        e1.setTitle("Willis Tower");
-        e1.setEventType("Community");
-        for(int i = 0; i < 6; i++){
-            listitems.add(e1);
-        }
-        e1.setEventType("Bar");
-
-        listitems.add(e1);
     }
 
     @Override
@@ -131,6 +130,8 @@ public class CardFragment extends Fragment {
             return eventName;
         }
 
+
+
        @Override
         public int getItemCount() {
             return list.size();
@@ -145,8 +146,52 @@ public class CardFragment extends Fragment {
         public ImageView shareImageView;
         public Event item;
 
+        private int getEventType(String event)
+        {
+            int eventName;
+            switch(event)
+            {
+                case "Bar": eventName = R.drawable.bar_hdpi; break;
+                case "Community": eventName = R.drawable.community_hdpi; break;
+                case "Concert": eventName = R.drawable.concert_hdpi; break;
+                case "Education": eventName = R.drawable.education_hdpi; break;
+                case "Fund Raiser": eventName = R.drawable.fundraiser_hdpi; break;
+                case "Get Together": eventName = R.drawable.get_together_hdpi; break;
+                case "Kids": eventName = R.drawable.kids_hdpi; break;
+                case "Party": eventName = R.drawable.party_hdpi; break;
+                case "Political": eventName = R.drawable.political_hdpi; break;
+                case "Sport": eventName = R.drawable.sport_hdpi; break;
+                default: eventName = 0; break;
+            }
+            return eventName;
+        }
+        private int EventTypePic(String event)
+        {
+            int eventName;
+            switch(event)
+            {
+                case "Bar": eventName = R.drawable.bar_event; break;
+                case "Community": eventName = R.drawable.community_event; break;
+                case "Concert": eventName = R.drawable.concert_event; break;
+                case "Education": eventName = R.drawable.school_event; break;
+                case "Fund Raiser": eventName = R.drawable.fundraising_event; break;
+                case "Get Together": eventName = R.drawable.get_together_event; break;
+                case "Kids": eventName = R.drawable.kids_event; break;
+                case "Party": eventName = R.drawable.party_event; break;
+                case "Political": eventName = R.drawable.political_event; break;
+                case "Sport": eventName = R.drawable.sporting_event; break;
+                default: eventName = R.drawable.get_together_event; break;
+            }
+
+            return eventName;
+        }
+
         public MyViewHolder(View v) {
             super(v);
+            if(item.isPromoted){
+                LinearLayout layout = (LinearLayout)v.findViewById(R.id.bottomSponsorbar);
+                layout.setBackgroundColor(Color.parseColor("#FFFFBB33"));
+            }
             titleTextView = (TextView) v.findViewById(R.id.titleTextView);
             coverImageView = (ImageView) v.findViewById(R.id.coverImageView);
             likeImageView = (ImageView) v.findViewById(R.id.likeImageView);
@@ -191,11 +236,14 @@ public class CardFragment extends Fragment {
                     ((TextView) layout.findViewById(R.id.start_time_box)).setText("Start Time :  " + cal.getTime());
                     cal.setTimeInMillis(item.getEndTime());
                     ((TextView) layout.findViewById(R.id.end_time_box)).setText("End Time :  " + cal.getTime());
+                    String type = item.getEventType();
 
+                    ((ImageView) layout.findViewById(R.id.eventPic)).setImageResource(getEventType(type));
                     pwindo.setAnimationStyle(R.style.Animation);
                     pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
                 }
             });
+
 
 
 

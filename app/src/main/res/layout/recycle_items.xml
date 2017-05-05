@@ -37,7 +37,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="left|bottom"
                     android:background="@android:drawable/screen_background_dark_transparent"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:id="@+id/bottomSponsorbar">
 
                     <TextView
                         android:id="@+id/titleTextView"
